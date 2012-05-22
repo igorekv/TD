@@ -11,10 +11,11 @@ package
 	public class fire extends Sprite
 	{
 		private var frame:int = 0;
-		public function fire() 
+		public function fire(rx,ry,rs) 
 		{
+			
 			var fillType:String = GradientType.RADIAL;
-			var colors:Array = [0xffff00, 0xffff00];
+			var colors:Array = [0xffAA00, 0xffAA00];
 			var alphas:Array = [1, 0];
 			var ratios:Array = [0, 255];
 			var matrix:Matrix = new Matrix();
@@ -24,12 +25,12 @@ package
 
 				var spark:Shape = new Shape();	
 				this.graphics.beginGradientFill(fillType, colors, alphas, ratios, matrix, spreadMethod);
-				this.graphics.drawRect(0,0,10,10);
+				this.graphics.drawCircle(5,5,5);
 				this.graphics.endFill();
-			this.x = -1+Math.random() * 3;
-			this.y = -1 + Math.random() * 3;
+			this.x +=rx+Math.random() * 3*rs;
+			this.y +=ry+Math.random() * 3*rs;
 			this.alpha = 0.5 + (Math.random() / 2);
-			this.scaleX = this.scaleY = Math.random();
+			this.scaleX = this.scaleY = (rs/2)+(Math.random()/2);
 			//addChild(this);
 			
  
@@ -38,17 +39,16 @@ package
 		
 		private function onEnterFrame(e:Event):void {
 			
-			if (frame < 5) {
-				this.x += 1;
+			if (frame < 5) {			
 				this.scaleX += (this.scaleX / 10);
 				
-			}else {
+			}
 				this.x += 1;
 				var colorInfo:ColorTransform = this.transform.colorTransform;
-				colorInfo.color = colorInfo.color - 0x001100; 
-				colorInfo.alphaOffset = -12*(frame-5);
+				colorInfo.color = colorInfo.color - 0x0800; 
+				colorInfo.alphaOffset = -5*frame;
 				this.transform.colorTransform = colorInfo; 
-			}
+			
 			frame++;
 			if (frame > 30) { this.removeEventListener(Event.ENTER_FRAME, onEnterFrame); parent.removeChild(this); }
 		}

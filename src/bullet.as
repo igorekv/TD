@@ -47,8 +47,11 @@ package
 		}
 		
 		private function onEnterFrame(e:Event):void {
-			var spr:fire = new fire();
-			addChild(spr);
+			var Fire:fire = new fire(this.x+this.width,this.y-1,this.scaleX);
+			
+			
+			
+			parent.addChild(Fire);
 			
 			
 		}

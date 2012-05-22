@@ -7,7 +7,7 @@ package
 	
 	public class Main extends Sprite 
 	{
-		
+		private var sprt:bullet = new bullet("bullet.png");
 		public function Main():void 
 		{
 			if (stage) init();
@@ -20,9 +20,22 @@ package
 			// entry point
 			
 			
-			var sprt:bullet = new bullet("bullet.png");
+			
+			sprt.x = 100;
+			sprt.y = 100;
+			//sprt.scaleX = sprt.scaleY = 1;
 			addChild(sprt);
+			
+			addEventListener(Event.ENTER_FRAME, onEnterFrame); //событие на каждый кадр
 		}
+		
+		private function onEnterFrame(e:Event):void {
+			sprt.x--; sprt.y--;
+			
+			
+		}
+		
+		
 	}
 	
 }
