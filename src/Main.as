@@ -2,11 +2,9 @@ package
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import bullet;
+	import fire;
 	
-	/**
-	 * ...
-	 * @author igorek
-	 */
 	public class Main extends Sprite 
 	{
 		
@@ -20,8 +18,11 @@ package
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			// entry point
+			
+			
+			var sprt:bullet = new bullet("bullet.png");
+			addChild(sprt);
 		}
-		
 	}
 	
 }
