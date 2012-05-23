@@ -7,7 +7,7 @@ package
 	
 	public class Main extends Sprite 
 	{
-		private var sprt:bullet = new bullet("bullet.png");
+		private var frame:int = 0;
 		public function Main():void 
 		{
 			if (stage) init();
@@ -21,17 +21,22 @@ package
 			
 			
 			
-			sprt.x = 100;
-			sprt.y = 100;
-			//sprt.scaleX = sprt.scaleY = 1;
-			addChild(sprt);
 			
 			addEventListener(Event.ENTER_FRAME, onEnterFrame); //событие на каждый кадр
 		}
 		
 		private function onEnterFrame(e:Event):void {
-			sprt.x--; sprt.y--;
-			
+			if (frame == 1) { frame = 0;
+			var sprt:bullet = new bullet(0, Math.random() * 360);
+			//var sprt:bullet = new bullet(0,180);
+			sprt.x = 100;
+			sprt.y = 100;
+			sprt.scaleX = sprt.scaleY = 1;
+			addChild(sprt);
+			//sprt.rotation =90;
+			//sprt.x+=2; 
+			}
+			frame++;
 			
 		}
 		
