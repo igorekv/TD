@@ -12,8 +12,15 @@ package
 	public class global 
 	{
 		private var loader:Loader; //загрузщик
-		public static var test:Bitmap = new Bitmap();
+		
+		
+		//библиотека картинок
+		public static var smoke:Bitmap = new Bitmap();
 		public static var bulletBitmap:Bitmap=new Bitmap();
+		
+		
+		public static var loadQueue:int = 0;
+		public static var loadStatus:int = 0;
 		public function global() 
 		{
 		
@@ -23,6 +30,7 @@ package
 		}
 		
 		public static function loadBitmap(path:String,dest:Bitmap) {
+		loadQueue++;
 		var loader:Loader = new Loader();
 		loader.load(new URLRequest(path)); //загрузка спрайтлиста	
 		loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e:Event) { onLoadComplete(e, dest);
@@ -32,8 +40,10 @@ package
 		
 		public static function onLoadComplete(e:Event,dest:Bitmap):void
 		{
+			trace('loadBitmap');
 			var bitmapdata:BitmapData = e.target.loader.content.bitmapData; //loader.content.bitmapData; //получаем данные о спрайтах	
 			dest.bitmapData = bitmapdata;
+			loadStatus++;
 			
 		}
 		

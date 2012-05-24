@@ -11,8 +11,11 @@ package
 		private var frame:int = 0;
 		public function Main():void 
 		{
+			global.loadBitmap("bullet.png", global.bulletBitmap);
+			global.loadBitmap("smoke.png", global.smoke);
 			if (stage) init();
-			else addEventListener(Event.ADDED_TO_STAGE, init);
+			else addEventListener(Event.ADDED_TO_STAGE, init); 
+			
 		}
 		
 		private function init(e:Event = null):void 
@@ -21,17 +24,21 @@ package
 			// entry point
 			
 			
-			global.loadBitmap("rocket.png", global.test);
+			trace(global.loadStatus);
 			
-			global.test.x = 50; global.test.y = 50;
-			stage.addChild(global.test);
-			
-			
-			addEventListener(Event.ENTER_FRAME, onEnterFrame); //событие на каждый кадр
+			addEventListener(Event.ENTER_FRAME, loadingWait); //событие на каждый кадр
 		}
 		
+		private function loadingWait(e:Event):void {// тут можно прикрутить анимацию загрузки
+			if (global.loadQueue == global.loadStatus) {
+				removeEventListener(Event.ENTER_FRAME, loadingWait);
+				addEventListener(Event.ENTER_FRAME, onEnterFrame)
+				
+			}
+		}
+		
+		
 		private function onEnterFrame(e:Event):void {
-			
 			if (frame == 1) { frame = 0;
 			var sprt:bullet = new bullet(0, Math.random() * 360);
 			//var sprt:bullet = new bullet(0,180);

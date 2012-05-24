@@ -15,6 +15,7 @@ package
 		private var spark:Shape = new Shape();
 		private var rsp:int = 1;
 		
+		
 		public function fire(rx:int, ry:int, rs:Number,ra:int,rsp:int)
 		{
 			this.rsp = rsp;
@@ -28,38 +29,44 @@ package
 			//var spreadMethod:String = SpreadMethod.PAD;
 			
 			//spark.graphics.beginGradientFill(fillType, colors, alphas, ratios, matrix, spreadMethod);
+			
 			spark.graphics.beginFill(0xFFDD00);
 			spark.graphics.drawCircle(5,5, 5);
 			spark.graphics.endFill();
 			
-			spark.x = rx -5*rs + Math.random() * 5 * rs;
-			spark.y = ry -5*rs + Math.random() * 5 * rs;
+			spark.x = rx -5*rs + Math.random() * 4 * rs;
+			spark.y = ry -5*rs + Math.random() * 4 * rs;
 			spark.alpha = 0.5 + (Math.random() / 2);
-			spark.scaleX = spark.scaleY = (rs / 2) + (Math.random() / 2);
+			spark.scaleX = spark.scaleY = (rs / 10) + (Math.random() / 4);
 			spark.visible = 0;
 			//spark.rotation = ra;
 			addChild(spark);
+			
+			
 			
 			addEventListener(Event.ENTER_FRAME, onEnterFrame); //событие на каждый кадр
 		}
 		
 		private function onEnterFrame(e:Event):void
 		{
+			
 			if (frame == 3)
 			{
+				var colorInfo:ColorTransform = this.transform.colorTransform;
+			
 				spark.visible = 1;
 			}
-			if (frame < 5)
+			if (frame > 3)
 			{
-			spark.scaleX += frame / 10;
-			spark.scaleY += frame / 10;
+			spark.scaleX = frame / 10; 
+			spark.scaleY = frame /10;
 			spark.x--; spark.y--;
 				
 			}
 			//this.x += 1;
 			var colorInfo:ColorTransform = this.transform.colorTransform;
 			colorInfo.color = colorInfo.color - 0x1100;
-			colorInfo.alphaOffset = -15 * frame;
+			colorInfo.alphaOffset = -10 * frame;
 			this.transform.colorTransform = colorInfo;
 			
 			frame++;
