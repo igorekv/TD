@@ -4,7 +4,8 @@ package
 	import flash.events.Event;
 	import bullet;
 	import fire;
-	
+	import global;
+	import flash.display.Bitmap;
 	public class Main extends Sprite 
 	{
 		private var frame:int = 0;
@@ -20,12 +21,17 @@ package
 			// entry point
 			
 			
+			global.loadBitmap("rocket.png", global.test);
+			
+			global.test.x = 50; global.test.y = 50;
+			stage.addChild(global.test);
 			
 			
 			addEventListener(Event.ENTER_FRAME, onEnterFrame); //событие на каждый кадр
 		}
 		
 		private function onEnterFrame(e:Event):void {
+			
 			if (frame == 1) { frame = 0;
 			var sprt:bullet = new bullet(0, Math.random() * 360);
 			//var sprt:bullet = new bullet(0,180);
