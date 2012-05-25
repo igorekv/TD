@@ -14,11 +14,11 @@ package
 		private var frame:int = 0;
 		private var spark:Shape = new Shape();
 		private var rsp:int = 1;
+		private var type:int = 0;
 		
-		
-		public function fire(rx:int, ry:int, rs:Number,ra:int,rsp:int)
+		public function fire(rx:int, ry:int, rs:Number,ra:int,rsp:int,type:int)
 		{
-			this.rsp = rsp;
+			this.rsp = rsp; this.type = type;
 			var fillType:String = GradientType.RADIAL;
 			var colors:Array = [0xffAA00, 0xffAA00];
 			//var alphas:Array = [1, 0];
@@ -30,12 +30,13 @@ package
 			
 			//spark.graphics.beginGradientFill(fillType, colors, alphas, ratios, matrix, spreadMethod);
 			
-			spark.graphics.beginFill(0xFFDD00);
+			if (type == global.FIRE) { spark.graphics.beginFill(0xFFDD00); }
+			if(type==global.SMOKE){spark.graphics.beginFill(0xDDDDDD);}
 			spark.graphics.drawCircle(5,5, 5);
 			spark.graphics.endFill();
 			
-			spark.x = rx -5*rs + Math.random() * 4 * rs;
-			spark.y = ry -5*rs + Math.random() * 4 * rs;
+			spark.x = rx -4*rs + Math.random() * 4 * rs;
+			spark.y = ry -4*rs + Math.random() * 4 * rs;
 			spark.alpha = 0.5 + (Math.random() / 2);
 			spark.scaleX = spark.scaleY = (rs / 10) + (Math.random() / 4);
 			spark.visible = 0;
@@ -52,20 +53,21 @@ package
 			
 			if (frame == 3)
 			{
-				var colorInfo:ColorTransform = this.transform.colorTransform;
-			
 				spark.visible = 1;
 			}
 			if (frame > 3)
 			{
 			spark.scaleX = frame / 10; 
 			spark.scaleY = frame /10;
-			spark.x--; spark.y--;
+			
 				
 			}
-			//this.x += 1;
+			
 			var colorInfo:ColorTransform = this.transform.colorTransform;
-			colorInfo.color = colorInfo.color - 0x1100;
+			if (type == global.FIRE) { colorInfo.color = colorInfo.color - 0x1100; }
+			if (type == global.SMOKE) { 
+				colorInfo.color = colorInfo.color - 0x111111; 
+				}
 			colorInfo.alphaOffset = -10 * frame;
 			this.transform.colorTransform = colorInfo;
 			

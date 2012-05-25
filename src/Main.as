@@ -39,15 +39,32 @@ package
 		
 		
 		private function onEnterFrame(e:Event):void {
-			if (frame == 1) { frame = 0;
-			var sprt:bullet = new bullet(0, Math.random() * 360);
+			if (frame == 50) { frame = 0;
+			var rnd = Math.random() * 360;
+			var sprt:bullet = new bullet(2, rnd);
 			//var sprt:bullet = new bullet(0,180);
 			sprt.x = 100;
 			sprt.y = 100;
 			sprt.scaleX = sprt.scaleY = 1;
 			addChild(sprt);
-			//sprt.rotation =90;
-			//sprt.x+=2; 
+			
+			//var rnd = Math.random() * 360;
+			var sprt:bullet = new bullet(1, rnd);
+			//var sprt:bullet = new bullet(0,180);
+			sprt.x = 100;
+			sprt.y = 100;
+			sprt.scaleX = sprt.scaleY = 1;
+			addChild(sprt);
+			/*
+			 var sprt:bullet = new bullet(0, Math.random() * 360);
+			//var sprt:bullet = new bullet(0,180);
+			sprt.x = 100;
+			sprt.y = 100;
+			sprt.scaleX = sprt.scaleY = 1;
+			addChild(sprt);
+		*/
+			
+			
 			}
 			frame++;
 			

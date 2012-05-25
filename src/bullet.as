@@ -13,18 +13,20 @@ package
 	 */
 	public class bullet extends Sprite
 	{
-		private var degree:Number = Math.PI / 180;
+		private const degree:Number = Math.PI / 180;
 		private var tileWidth:int = 9; //ширина спрайта
 		private var tileHeight:int = 9; //высота спрайта
 		private var displayBitmapData:BitmapData = new BitmapData(tileWidth, tileHeight, true, 0xffffff); //данные спрайта на экране
 		private var displayBitmap:Bitmap = new Bitmap(displayBitmapData); //картинка спрайта на экране
 		private var BlitPoint:Point = new Point(0, 0); //точка начала копирования пикселей
 		private var blitRect:Rectangle = new Rectangle(0, 0, tileWidth, tileHeight); //прямоугольник область копирования пикселей
-		private var tilesPerRow:int = 9;
 		private var bulletType:int = 0;
 		private var bulletAngle:int = 0;
 		private var bulletSpeed:int = 3;
-		private var bulletRange:int = 40;
+		private var bulletRange:int = 50;
+		private var bulletDist:int = 0;
+		private var ballisticY:Number = 0;
+		private var ballisticOld:Number = 0;
 		private var frame:int = 0;
 		
 		public function bullet(bType:int, bAngle:int)
@@ -39,43 +41,43 @@ package
 			
 			updateSprite();	
 		}
-		/*
-		private function onLoadComplete(e:Event):void
-		{ //обработчик окончания загрузки
-			tileSheet = e.target.loader.content.bitmapData; //получаем данные о спрайтах
-			addEventListener(Event.ENTER_FRAME, onEnterFrame); //событие на каждый кадр
-			//updateSprite();
-			global.bulletBitmap.x = -tileWidth / 2;
-			global.bulletBitmap.y = -tileHeight / 2;
-			this.rotation = bulletAngle + 180;
-			addChild(global.bulletBitmap); //выводим обьект на экран
-			
-			updateSprite();
-		
-		}
-		*/
+	
 		
 		private function onEnterFrame(e:Event):void
 		{
-			//var Fire:fire = new fire(this.x-this.width/2,this.y-this.height/2,this.scaleX);
+			
 			this.x += Math.cos(bulletAngle * degree) * bulletSpeed;
-			this.y += Math.sin(bulletAngle * degree) * bulletSpeed;
-			
-			if (frame == 2)
-			{
-				frame = 0;
-				var Fire:fire = new fire(this.x, this.y, this.scaleX, bulletAngle, bulletSpeed);
-				parent.addChild(Fire);
+			if (bulletType == 2) {
+				ballisticY = Math.sin((Math.PI / bulletRange) * bulletDist) * 80;
+				
+				this.y = this.y + ballisticOld + Math.sin(bulletAngle * degree) * bulletSpeed - ballisticY;
+				ballisticOld = ballisticY;
+			}else {
+				this.y += Math.sin(bulletAngle * degree) * bulletSpeed;
 			}
-			frame++;
 			
-			if (bulletRange <= 0)
+			
+			switch(bulletType) {
+				
+			case 0:
+			if (frame == 2){frame = 0;var Fire:fire = new fire(this.x, this.y, this.scaleX, bulletAngle, bulletSpeed,global.FIRE);parent.addChild(Fire);}
+			break;
+			case 1:
+			break;
+			case 2:
+			if (frame == 2){frame = 0;var Fire:fire = new fire(this.x, this.y, this.scaleX, bulletAngle, bulletSpeed,global.SMOKE);parent.addChild(Fire);}
+			break;
+			}
+			
+			
+			frame++;
+			if (bulletRange == bulletDist)
 			{
 				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 				parent.removeChild(this);
 				
 			}
-			bulletRange--;
+			bulletDist++;
 		
 		}
 		

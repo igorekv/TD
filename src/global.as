@@ -15,6 +15,8 @@ package
 		
 		
 		//библиотека картинок
+		public static const FIRE:int = 0;
+		public static const SMOKE:int = 2;
 		public static var smoke:Bitmap = new Bitmap();
 		public static var bulletBitmap:Bitmap=new Bitmap();
 		
