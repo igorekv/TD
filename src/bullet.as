@@ -13,7 +13,7 @@ package
 	 */
 	public class bullet extends Sprite
 	{
-		private const degree:Number = Math.PI / 180;
+		
 		private var tileWidth:int = 9; //ширина спрайта
 		private var tileHeight:int = 9; //высота спрайта
 		private var displayBitmapData:BitmapData = new BitmapData(tileWidth, tileHeight, true, 0xffffff); //данные спрайта на экране
@@ -22,9 +22,9 @@ package
 		private var blitRect:Rectangle = new Rectangle(0, 0, tileWidth, tileHeight); //прямоугольник область копирования пикселей
 		private var bulletType:int = 0;
 		private var bulletAngle:int = 0;
-		private var bulletSpeed:int = 3;
-		private var bulletRange:int = 50;
-		private var bulletDist:int = 0;
+		private var bulletSpeed:int = 2
+		private var bulletRange:int = 60
+		private var bulletDist:int =0
 		private var ballisticY:Number = 0;
 		private var ballisticOld:Number = 0;
 		private var frame:int = 0;
@@ -46,14 +46,17 @@ package
 		private function onEnterFrame(e:Event):void
 		{
 			
-			this.x += Math.cos(bulletAngle * degree) * bulletSpeed;
+			this.x += Math.cos(bulletAngle * global.degree) * bulletSpeed;
 			if (bulletType == 2) {
 				ballisticY = Math.sin((Math.PI / bulletRange) * bulletDist) * 80;
 				
-				this.y = this.y + ballisticOld + Math.sin(bulletAngle * degree) * bulletSpeed - ballisticY;
+				this.y = this.y + ballisticOld + Math.sin(bulletAngle * global.degree) * bulletSpeed - ballisticY;
+				
+				this.rotation = global.getAngle( ballisticY - ballisticOld,Math.cos(bulletAngle * global.degree) * bulletSpeed)+90;
+				//trace(global.getAngle(ballisticY-ballisticOld,1));
 				ballisticOld = ballisticY;
 			}else {
-				this.y += Math.sin(bulletAngle * degree) * bulletSpeed;
+				this.y += Math.sin(bulletAngle * global.degree) * bulletSpeed;
 			}
 			
 			
@@ -75,7 +78,7 @@ package
 			{
 				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 				parent.removeChild(this);
-				
+				//trace('boom');
 			}
 			bulletDist++;
 		

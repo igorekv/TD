@@ -21,7 +21,7 @@
   <build>
     <option accessible="False" />
     <option allowSourcePathOverlap="False" />
-    <option benchmark="False" />
+    <option benchmark="True" />
     <option es="False" />
     <option locale="" />
     <option loadConfig="" />
