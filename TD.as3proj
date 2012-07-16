@@ -5,9 +5,9 @@
     <movie outputType="Application" />
     <movie input="" />
     <movie path="bin\TD.swf" />
-    <movie fps="30" />
+    <movie fps="24" />
     <movie width="300" />
-    <movie height="200" />
+    <movie height="400" />
     <movie version="10" />
     <movie minorVersion="0" />
     <movie platform="Flash Player" />

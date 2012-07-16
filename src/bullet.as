@@ -1,5 +1,6 @@
 package
 {
+	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -22,15 +23,25 @@ package
 		private var blitRect:Rectangle = new Rectangle(0, 0, tileWidth, tileHeight); //прямоугольник область копирования пикселей
 		private var bulletType:int = 0;
 		private var bulletAngle:int = 0;
-		private var bulletSpeed:int = 2
+		private var bulletSpeed:int = 5
 		private var bulletRange:int = 60
 		private var bulletDist:int =0
 		private var ballisticY:Number = 0;
 		private var ballisticOld:Number = 0;
 		private var frame:int = 0;
+		private var damage:int;
+		private var hitTestBox:Shape = new Shape();;
 		
-		public function bullet(bType:int, bAngle:int)
+		public function bullet(bType:int, bAngle:int,dmg:int,dist:int)
 		{
+			
+			bulletRange = dist;
+			hitTestBox.graphics.beginFill(0xFF0000,0);
+			hitTestBox.graphics.drawRect(-2, -2, 4, 4);
+			hitTestBox.graphics.endFill();
+			addChild(hitTestBox);
+			
+			this.damage = dmg;
 			this.bulletAngle = bAngle
 			this.bulletType = bType;
 			this.addEventListener(Event.ENTER_FRAME, onEnterFrame); //событие на каждый кадр
@@ -74,14 +85,29 @@ package
 			
 			
 			frame++;
-			if (bulletRange == bulletDist)
+			if (bulletRange/bulletSpeed == bulletDist)
 			{
 				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 				parent.removeChild(this);
 				//trace('boom');
-			}
+			}else{
 			bulletDist++;
+			
+			checkHit();
+		}
+		}
 		
+		private function checkHit():void {
+			//hitTestObject
+			
+			for (var i:int= 0; i < global.foeArmy.length; i++)
+				{
+			if (global.foeArmy[i]!=null && hitTestBox.hitTestObject(global.foeArmy[i].sprite)) { 
+				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+				parent.removeChild(this);
+				global.foeArmy[i].hit(damage);
+				}
+				}
 		}
 		
 		private function updateSprite():void

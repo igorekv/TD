@@ -39,7 +39,7 @@ package
 			spark.y = ry -4*rs + Math.random() * 4 * rs;
 			spark.alpha = 0.5 + (Math.random() / 2);
 			spark.scaleX = spark.scaleY = (rs / 10) + (Math.random() / 4);
-			spark.visible = 0;
+			spark.visible = false;
 			//spark.rotation = ra;
 			addChild(spark);
 			
@@ -53,7 +53,7 @@ package
 			
 			if (frame == 3)
 			{
-				spark.visible = 1;
+				spark.visible = true;
 			}
 			if (frame > 3)
 			{
