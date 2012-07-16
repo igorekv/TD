@@ -25,6 +25,7 @@ package
 		private var curY:Number;
 		private var statBar:statusBar;
 		private var path:Array = new Array();
+		private var speed:int = 1;
 		
 		public function enemy(x:int, y:int)
 		{
@@ -74,8 +75,8 @@ package
 			{
 				
 				var len:Number = destCalc(Math.abs(curX - path[checkpoint].mapX), Math.abs(curY - path[checkpoint].mapY));
-				curX += (path[checkpoint].mapX - curX) / (len / 2);
-				curY += (path[checkpoint].mapY - curY) / (len / 2);
+				curX += (path[checkpoint].mapX - curX) / (len / speed);
+				curY += (path[checkpoint].mapY - curY) / (len / speed);
 				
 			}
 			this.x = curX;

@@ -16,6 +16,8 @@ package
 	
 	public class Main extends Sprite
 	{
+		private var loadingTxt:TextField = new TextField();
+		private var loadingTmp:int = 0;
 		private var frame:int = 0;
 		private var mapLevel:map;
 		private var mapEdit:mapEditor;
@@ -27,10 +29,11 @@ package
 		private var game:Sprite=new Sprite();
 		private var mariner:soldier;
 		private var dummy:enemy;
-		private var screen_manager:screenManger;
+		
 		
 		public function Main()
 		{
+			
 			global.loadBitmap("bullet.png", global.bulletBitmap);
 			global.loadBitmap("terrain2.png", global.terrainBitmap);
 			global.loadBitmap("level4.png", global.levelBitmap);
@@ -47,19 +50,25 @@ package
 			removeEventListener(Event.ADDED_TO_STAGE, init);
 			// entry point
 			SWFProfiler.init(stage, this);
+			loadingTxt.y = Math.random() * 100;
+			loadingTxt.text = "loading..." + String(loadingTmp);
+			addChild(loadingTxt);
+//			stage.loaderInfo.bytesLoaded / stage.loaderInfo.bytesTotal;
+			trace(stage.loaderInfo.bytesTotal);
 			
 			
-			screen_manager = new screenManger(stage);
-			screen_manager.loading();
+		
 			addEventListener(Event.ENTER_FRAME, loadingWait); //запускаем ожидание пока загрузятся ресурсы
 		}
 		
 		private function loadingWait(e:Event):void
 		{ 
 			
+			loadingTmp++;
 			if (global.loadQueue == global.loadStatus)
 			{
 				removeEventListener(Event.ENTER_FRAME, loadingWait);
+				removeChild(loadingTxt);
 				addEventListener(Event.ENTER_FRAME, onEnterFrame)
 				afterLoading();
 				
@@ -69,20 +78,20 @@ package
 		
 		private function afterLoading():void
 		{
-			screen_manager.game();
+			
 			//едитор--------------------------
 			//mapEdit = new mapEditor();
 			//addChild(mapEdit);
 			//карта----------------------------
 			mapLevel = new map(1);
 			//mapLevel.scaleX = mapLevel.scaleY=0.5;
-			addChild(mapLevel);
+			//addChild(mapLevel);
 			//солдатики---------------
-			/*
+			
 			mariner = new soldier(20, 20);
 			global.myArmy.push(mariner);
 			addChild(mariner);
-			*/
+			
 			/*mariner = new soldier(200, 100);
 			global.myArmy.push(mariner);
 			addChild(mariner);
@@ -109,14 +118,14 @@ package
 				//trace(global.nodes[i]);
 			}
 			*/
-			var a:int=getTimer()
+			/*var a:int=getTimer()
 			trace("timer=",a);
 			
 			
 			var path:Array=global.findPath(global.nodes[0][4], global.nodes[10][9]);
 			
 			trace("timer=", getTimer()-a);
-			
+			*/
 			//for (var i:int = 0; i < path.length; i++ ) {trace(path[i].nodeName);			}
 		}
 		

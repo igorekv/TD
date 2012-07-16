@@ -66,7 +66,6 @@ package
 			var loader:Loader = new Loader();
 			loader.load(new URLRequest(path)); //загрузка спрайтлиста	
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(e:Event):void{onLoadBitmapComplete(e, dest);})
-		
 		}
 		
 		public static function onLoadBitmapComplete(e:Event, dest:Bitmap):void
