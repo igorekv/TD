@@ -6,7 +6,10 @@ package
 	import flash.net.URLRequest;
 	import flash.net.URLLoader;
 	import flash.events.Event;
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	import flash.utils.getTimer;
+	
 	
 	/**
 	 * ...
@@ -17,6 +20,8 @@ package
 		private var loader:Loader; //загрузщик
 		
 		//библиотека картинок
+		public static const STAGE_WIDTH:int = 640;
+		public static const STAGE_HEIGHT:int = 480;
 		public static const FIRE:int = 0;
 		public static const SMOKE:int = 2;
 		public static var smoke:Bitmap = new Bitmap();
@@ -24,8 +29,9 @@ package
 		public static var terrainBitmap:Bitmap = new Bitmap();
 		public static var levelBitmap:Bitmap = new Bitmap();
 		public static var levelInfo:Object = new Object();
-		public static var tileHeight:int = 16;
-		public static var tileWidth:int = 16;
+		public static var TILE_HEIGHT:int = 16;
+		public static var TILE_WIDTH:int = 16;
+		public static var NODES_PER_SECTOR = 4;
 		public static const radian:Number = 180 / Math.PI;
 		public static const degree:Number = Math.PI / 180;
 		public static var spread:int = 40; // разброс координат при указании цели
@@ -40,12 +46,16 @@ package
 		public static var stat_bullHitCount:int = 0;
 		public static var stat_dmgCount:int = 0;
 		public static var nodes:Vector.<Vector.<node>> = new Vector.<Vector.<node>>(); //массив нод для поиска пути
+		public static var sectors:Vector.<Vector.<sector>> = new Vector.<Vector.<sector>>(); //массив нод для поиска пути
+		public static var score:int = 0;
+		public static var money:int = 100;
 		
 		//public static var nodes:Array = new Array();//массив для a*
 		public function global()
 		{
 		
 		}
+		
 		
 		public static function loadText(path:String, dest:Object):void
 		{
@@ -75,6 +85,15 @@ package
 			dest.bitmapData = bitmapdata;
 			loadStatus++;
 		
+		}
+		public static function prepText(text:String, size:int, color:int,sel:Boolean=false):TextField {
+			var txtFld:TextField = new TextField();
+			txtFld.embedFonts = true;
+			txtFld.defaultTextFormat = new TextFormat('stencil', size, color);
+			txtFld.autoSize;
+			txtFld.selectable = sel;
+			txtFld.text = text;
+			return txtFld;
 		}
 		
 		public static function cleanGarbage():void
@@ -178,15 +197,15 @@ package
 			}
 			
 			var len:int = path.length;
-			path[0].mapX = (path[0].x + path[0].x + path[1].x) / 3 * 16;
-			path[0].mapY = (path[0].y + path[0].y + path[1].y) / 3 * 16;
+			path[0].mapX = (path[0].x + path[0].x + path[1].x) / 3 * TILE_WIDTH;
+			path[0].mapY = (path[0].y + path[0].y + path[1].y) / 3 * TILE_HEIGHT;
 			for (var i:int = 1; i < len - 1; i++)
 			{
-				path[i].mapX = (path[(i - 1)].x + path[i].x + path[(i + 1)].x) / 3 * 16;
-				path[i].mapY = (path[i - 1].y + path[i].y + path[i + 1].y) / 3 * 16;
+				path[i].mapX = (path[(i - 1)].x + path[i].x + path[(i + 1)].x) / 3 * TILE_WIDTH;
+				path[i].mapY = (path[i - 1].y + path[i].y + path[i + 1].y) / 3 * TILE_HEIGHT;
 			}
-			path[len - 1].mapX = (path[len - 2].x + path[len - 1].x + path[len - 1].x) / 3 * 16;
-			path[len - 1].mapY = (path[len - 2].y + path[len - 1].y + path[len - 1].y) / 3 * 16;
+			path[len - 1].mapX = (path[len - 2].x + path[len - 1].x + path[len - 1].x) / 3 * TILE_WIDTH;
+			path[len - 1].mapY = (path[len - 2].y + path[len - 1].y + path[len - 1].y) / 3 * TILE_HEIGHT;
 			
 			return path;
 		}

@@ -5,6 +5,9 @@ package
 	import bullet;
 	import fire;
 	import flash.text.TextField;
+	import flash.text.TextFieldAutoSize;
+    import flash.text.TextFormat;
+	import flash.text.Font;
 	import global;
 	import flash.display.Bitmap;
 	import map;
@@ -14,8 +17,11 @@ package
 	import SWFProfiler;
 	
 	
+	
 	public class Main extends Sprite
 	{
+		[Embed (  source = "../lib/STENCIL.TTF", fontFamily = "stencil",  mimeType = 'application/x-font-truetype',embedAsCFF="false") ]private var CooperFont:Class;
+		
 		private var loadingTxt:TextField = new TextField();
 		private var loadingTmp:int = 0;
 		private var frame:int = 0;
@@ -29,8 +35,8 @@ package
 		private var game:Sprite=new Sprite();
 		private var mariner:soldier;
 		private var dummy:enemy;
-		
-		
+		private var menu:Sprite = new Sprite();//экран с меню
+		private var uiMenu:userInterface = new userInterface();
 		public function Main()
 		{
 			
@@ -54,7 +60,7 @@ package
 			loadingTxt.text = "loading..." + String(loadingTmp);
 			addChild(loadingTxt);
 //			stage.loaderInfo.bytesLoaded / stage.loaderInfo.bytesTotal;
-			trace(stage.loaderInfo.bytesTotal);
+			//trace(stage.loaderInfo.bytesTotal);
 			
 			
 		
@@ -69,7 +75,7 @@ package
 			{
 				removeEventListener(Event.ENTER_FRAME, loadingWait);
 				removeChild(loadingTxt);
-				addEventListener(Event.ENTER_FRAME, onEnterFrame)
+				//addEventListener(Event.ENTER_FRAME, onEnterFrame)
 				afterLoading();
 				
 			}
@@ -78,17 +84,58 @@ package
 		
 		private function afterLoading():void
 		{
+			//showMenu();//отображает меню
+			showGame();//запускает игру
+			
+			
+		}
+		
+		private function showMenu() {
+			
+			
+			menu.graphics.beginFill(0x333333);
+			menu.graphics.drawRect(0, 0, stage.stageWidth, stage.stageHeight);
+			menu.graphics.endFill();
+			var button:Sprite = new Sprite()
+			button.graphics.beginFill(0xaaaaaa);
+			button.graphics.drawRect(global.STAGE_WIDTH/3-100, global.STAGE_HEIGHT/2-10,200,20);
+			button.graphics.endFill();
+			button.addEventListener(MouseEvent.CLICK, menuPlay);
+			var buttonText:TextField = global.prepText('Play', 14, 0x777777);
+			buttonText.x = global.STAGE_WIDTH / 3;
+			buttonText.y = global.STAGE_HEIGHT / 2-9;
+			button.addChild(buttonText);
+			menu.addChild(button);
+			
+			addChild(menu);
+			
+		}
+		
+		private function menuPlay(e:MouseEvent) {
+			e.target.removeEventListener(MouseEvent.CLICK, menuPlay);
+			removeChild(menu);
+			showGame();
+			//addEventListener(Event.ENTER_FRAME, onEnterFrame);
+		}
+		
+		private function showGame() {
+			
+			//addChild(global.prepText("tst1 level 1", 14, 0xFFFFFF));
 			
 			//едитор--------------------------
 			//mapEdit = new mapEditor();
 			//addChild(mapEdit);
+			
 			//карта----------------------------
+			
 			mapLevel = new map(1);
 			//mapLevel.scaleX = mapLevel.scaleY=0.5;
-			//addChild(mapLevel);
+			uiMenu.layer1.addChild(mapLevel);
+			//юзеринтерфейс
+			addChild(uiMenu);
+			uiMenu.update();
 			//солдатики---------------
-			
-			mariner = new soldier(20, 20);
+			/*mariner = new soldier(20, 20);
 			global.myArmy.push(mariner);
 			addChild(mariner);
 			
@@ -106,28 +153,16 @@ package
 			*/
 			
 			//parseLevel();
+			/*
 			dummy = new enemy(100, 150);
 			global.foeArmy.push(dummy);
 			addChild(dummy);
 		
 			
-			/*
-			for (var i:int = 0; i < 50; i++){
-            global.nodes[i] = new Vector.<node>();
-			for (var j:int = 0; j < 50; j++){                global.nodes[i][j] = new node(i, j, int(Math.random()*2) );				}
-				//trace(global.nodes[i]);
-			}
 			*/
-			/*var a:int=getTimer()
-			trace("timer=",a);
 			
-			
-			var path:Array=global.findPath(global.nodes[0][4], global.nodes[10][9]);
-			
-			trace("timer=", getTimer()-a);
-			*/
-			//for (var i:int = 0; i < path.length; i++ ) {trace(path[i].nodeName);			}
 		}
+		
 		
 		private function parseLevel():void {
 			var strings:Array = global.levelInfo.text.split('\r\n');
@@ -146,6 +181,7 @@ package
 			
 		private function onEnterFrame(e:Event):void
 		{
+			
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
 			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);

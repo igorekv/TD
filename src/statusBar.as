@@ -21,6 +21,7 @@ package
 		
 		public function draw(_life:int):void
 		{
+				
 				sprite.graphics.clear();
 				sprite.graphics.beginFill(0x00FF00, 0.5);
 				sprite.graphics.drawRect(0, 0, Width / (maxLife / _life), 3);
