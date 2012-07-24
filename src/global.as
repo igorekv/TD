@@ -49,7 +49,7 @@ package
 		public static var stat_bulletCount:int = 0;
 		public static var stat_bullHitCount:int = 0;
 		public static var stat_dmgCount:int = 0;
-		public static var nodes:Vector.<Vector.<node>> = new Vector.<Vector.<node>>(); //массив нод для поиска пути
+		public static var nodes:Vector.<Vector.int> = new Vector.<Vector.int>(); //массив нод для поиска пути
 		public static var sectors:Vector.<Vector.<node>> = new Vector.<Vector.<node>>(); //массив нод для поиска пути
 		public static var score:int = 0;
 		public static var money:int = 100;
@@ -124,14 +124,14 @@ package
 			return Math.atan2(y, x) * global.radian + 180;
 		}
 		
-		public static function findPath(start:node, dest:node):Array
+		public static function findPath(sx,sy,dx,dy):Array
 		{
 			
 			var path:Array = new Array();
 			var oList:Vector.<node> = new Vector.<node>();
 			var cList:Vector.<node> = new Vector.<node>();
-			var currentNode:node = start;
-			oList.push(start);
+			var currentNode:node = new node(sx, sy);
+			oList.push(currentNode);
 			var timer:int = getTimer();
 			
 			while (currentNode != dest)
