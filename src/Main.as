@@ -4,6 +4,7 @@ package
 	import flash.events.Event;
 	import bullet;
 	import fire;
+	import flash.events.TimerEvent;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
     import flash.text.TextFormat;
@@ -36,7 +37,8 @@ package
 		private var mariner:soldier;
 		private var dummy:enemy;
 		private var menu:Sprite = new Sprite();//экран с меню
-		private var uiMenu:userInterface = new userInterface();
+		
+		private var foeBase:enemyBase;
 		public function Main()
 		{
 			
@@ -71,7 +73,8 @@ package
 		{ 
 			
 			loadingTmp++;
-			if (global.loadQueue == global.loadStatus)
+			//if (global.loadQueue == global.loadStatus)
+			if(loadingTmp>20)
 			{
 				removeEventListener(Event.ENTER_FRAME, loadingWait);
 				removeChild(loadingTxt);
@@ -120,6 +123,11 @@ package
 		
 		private function showGame() {
 			
+			stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			
+			global.uiMenu= new userInterface();
 			//addChild(global.prepText("tst1 level 1", 14, 0xFFFFFF));
 			
 			//едитор--------------------------
@@ -127,30 +135,36 @@ package
 			//addChild(mapEdit);
 			
 			//карта----------------------------
-			
+			parseLevel();
 			mapLevel = new map(1);
 			//mapLevel.scaleX = mapLevel.scaleY=0.5;
-			uiMenu.layer1.addChild(mapLevel);
+			//global.uiMenu.layer1.addChild(mapLevel);
 			//юзеринтерфейс
-			addChild(uiMenu);
-			uiMenu.update();
+			addChild(global.uiMenu);
+			global.uiMenu.update();
+			global.levelTime.start();
+			
 			//солдатики---------------
-			/*mariner = new soldier(20, 20);
+			foeBase = new enemyBase();
+			global.uiMenu.layer1.addChild(foeBase);
+			mariner = new soldier(20, 20);
+			global.myArmy.push(mariner);
+			global.uiMenu.layer1.addChild(mariner);
+			
+			mariner = new soldier(20, 20);
+			global.myArmy.push(mariner);
+			global.uiMenu.layer1.addChild(mariner);
+			
+			mariner = new soldier(200, 100);
 			global.myArmy.push(mariner);
 			addChild(mariner);
 			
-			/*mariner = new soldier(200, 100);
-			global.myArmy.push(mariner);
-			addChild(mariner);
-			
-			mariner = new soldier(100, 200);
-			global.myArmy.push(mariner);
-			addChild(mariner);
 			//враги-----------------------
+			/*
 			dummy = new enemy(150, 150);
 			global.foeArmy.push(dummy);
-			addChild(dummy);
-			*/
+			global.uiMenu.layer1.addChild(dummy);
+			
 			
 			//parseLevel();
 			/*
@@ -160,46 +174,45 @@ package
 		
 			
 			*/
-			
+			addEventListener(Event.ENTER_FRAME,onEnterFrame)
 		}
 		
 		
 		private function parseLevel():void {
 			var strings:Array = global.levelInfo.text.split('\r\n');
 			global.levelInfo.levelName = strings[0];//название уровня
-			trace(global.levelInfo.levelName);
-			var tmp:Array = strings[1].split(';');
-			global.levelInfo.levelPath = new Array();
-			for (var i:int = 0; i < tmp.length;i++ ){//тропинка
-			global.levelInfo.levelPath[i] = tmp[i].split(',');
+			
+			
+			
+			global.levelInfo.wave = new Array();
+			
+			for (var wv:int = 0; wv < strings.length-1;wv++ ){//волны
+				global.levelInfo.wave[wv] = new Array();
+				var elements:Array = strings[wv+1].split(';');
+				var fullTime = 0;
+				for (var i = 0; i < elements.length; i++) {
+					var unitTmp = elements[i].split(',');
+					fullTime += int(unitTmp[0]);
+					global.levelInfo.wave[wv][i] = new waveElement(unitTmp[0], unitTmp[1], fullTime);
+					if (i == 0) { fullTime = 0;}
+					//trace(i,int(fullTime));
+				}
+				
 			}
+			trace(global.levelInfo.wave[0][0].startTimer);
 			
-			
-			//trace(global.levelInfo.levelPath[2][0]);
 			}
 			
 			
 		private function onEnterFrame(e:Event):void
 		{
+			global.score++;
 			
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
 			
-			if (frame == 1)
+			if (frame == 6)
 			{
+				global.uiMenu.update();
 				frame = 0;
-				/*
-				   var rnd = Math.random() * 360;
-				   var sprt:bullet = new bullet(2, rnd);
-				   //var sprt:bullet = new bullet(0,180);
-				   sprt.x = 100;
-				   sprt.y = 100;
-				   sprt.scaleX = sprt.scaleY = 1;
-				   addChild(sprt);
-				
-				 */
-				
 			}
 			frame++;
 		global.cleanGarbage();

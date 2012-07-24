@@ -5,13 +5,13 @@
     <movie outputType="Application" />
     <movie input="" />
     <movie path="bin\TD.swf" />
-    <movie fps="24" />
-    <movie width="300" />
-    <movie height="400" />
+    <movie fps="30" />
+    <movie width="500" />
+    <movie height="300" />
     <movie version="10" />
     <movie minorVersion="0" />
     <movie platform="Flash Player" />
-    <movie background="#004000" />
+    <movie background="#808080" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>

@@ -16,7 +16,7 @@ package
 		private const FIRE:int = 2;
 		public var sprite:Sprite = new Sprite();
 		public var select:Boolean = false;
-		public var life:int = 350;
+		public var life:int = 100;
 		public var toDelete:Boolean = false;
 		private var targetX:int;
 		private var targetY:int;

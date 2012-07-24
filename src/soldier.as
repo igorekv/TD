@@ -24,8 +24,9 @@ package
 		private var targetEnemyX:int=0;
 		private var targetEnemyY:int = 0;
 		private var damage:int = 10;
-		
-		
+		private var walkState:int = 0;
+		private var currentSector:node;
+		private var sectorSlot:int = 0;
 		public function soldier(x:int,y:int) 
 		{
 			this.x=curX = targetX = x; this.y=curY = targetY = y;
@@ -50,15 +51,32 @@ package
 			sprite.graphics.beginFill(0x33cc33);
 			sprite.graphics.drawRect(0, 0, 10, 10);
 			sprite.graphics.endFill();
-			if(int(curX)!=targetX){
-			var len:Number = destCalc(Math.abs(curX - targetX), Math.abs(curY - targetY));
 			
+			if(Math.abs(int(curX)-targetX)>1 || Math.abs(int(curY)-targetY)>1)  {//если до цели еще далеко
+			if (walkState == 0) {  walkState = 1; if (currentSector) { currentSector.leave(sectorSlot); } }
+			var len:Number = destCalc(Math.abs(curX - targetX), Math.abs(curY - targetY));
+			if (len > 0) {
 			curX +=(targetX - curX) / len;
-			curY+= (targetY - curY) / len;}
+			curY += (targetY - curY) / len;
+			}
+			}
+			else 
+			{//если пришли до цели
+				if (walkState == 1) {  getPosition(); walkState = 3; } else { walkState = 0; } }
 			this.x = curX; this.y = curY;
 			checkFire();
 			
 		}
+		private function getPosition() {
+		currentSector=global.sectors[int(this.x / global.SECTOR_WIDTH)][int(this.y / global.SECTOR_HEIGHT)]
+		var coord:Vector.<int> = currentSector.getPosition();
+		if(coord.length!=0){
+		targetX = coord[0];
+		targetY = coord[1];
+		sectorSlot = coord[2];
+		}else { currentSector = null;}
+		}
+		
 		private function destCalc(x:int, y:int):Number {
 		return Math.sqrt((x*x) + (y *y));	
 		}
@@ -124,7 +142,7 @@ package
 		
 		public function setTarget(x:int, y:int):void {
 			
-			targetX = x-(global.spread/2)+Math.random()*global.spread; targetY = y-(global.spread/2)+Math.random()*global.spread;
+			targetX = x; targetY = y;
 			
 			
 		}

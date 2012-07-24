@@ -37,14 +37,14 @@ package
 		}
 		private function updateSectors():void {
 			for (var _x:int = 0; _x < global.levelBitmap.width/global.NODES_PER_SECTOR; _x++ ) {
-				global.sectors[_x] = new Vector.<sector>();
+				global.sectors[_x] = new Vector.<node>();
 					for (var _y:int = 0; _y < global.levelBitmap.height/global.NODES_PER_SECTOR; _y++ ) {
-						global.sectors[_x][_y] = new sector();
+						global.sectors[_x][_y] = new node(_x, _y);
 						}
 			}
 		}
 		
-		private function updateMap():void {
+		public function updateMap():void {
 			
 			//trace(global.levelBitmap.height, global.levelBitmap.width);
 			for (var _x:int = 0; _x < global.levelBitmap.width; _x++ ) {
@@ -55,7 +55,9 @@ package
 					
 					
 					drawSprite((global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x0000FF), _x, _y);
-					global.nodes[_x][_y] = new node(_x, _y, (global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x0000FF) );
+					//var tmp:int=(global.levelBitmap.bitmapData.getPixel(_x, _y) & 0x0000FF);
+					//if (tmp < 10) {global.nodes[_x][_y] = new node(_x, _y, 0 );}else{global.nodes[_x][_y] = new node(_x, _y, 50 );}
+						global.nodes[_x][_y] = new node(_x, _y, (global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x0000FF) );
 					//drawSprite((global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x00FF00)>>8, _x, _y);
 					//drawSprite((global.levelBitmap.bitmapData.getPixel(_x, _y)& 0xFF0000)>>16,  _x, _y);
 					
@@ -63,7 +65,7 @@ package
 					}
 					//trace(global.nodes[_y]);
 			}
-			
+			trace(global.nodes.length, global.nodes[0].length);
 		}
 		
 		
