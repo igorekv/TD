@@ -133,15 +133,16 @@ package
 			var currentNode:node = start;
 			oList.push(start);
 			var timer:int = getTimer();
-			var sortFlag:Boolean = false;
+			
 			while (currentNode != dest)
 			{
 				var timertmp:int = getTimer();
-				if (sortFlag) { oList.sort(Array.NUMERIC); sortFlag = false; }
+				oList.sort(Array.NUMERIC); 
+				//trace(oList.length);
 				currentNode = oList[0]; //берем первую ноду
 				oList.splice(0, 1); //убираем ее из очереди
 				cList.push(currentNode); //добавляем в список проверенных
-				
+				currentNode.cList = true;
 				for (var i:int = 0; i < 9; i++)
 				{
 					var _x:int = (currentNode.x - 1) + (i % 3);
@@ -151,6 +152,7 @@ package
 						
 						
 						if (cList.indexOf(global.nodes[_x][_y]) < 0)
+						//if (!global.nodes[_x][_y].cList)
 						{ //если нода не находится в открытом или закрытом листах
 							var cost:int = 10; //цена на переход по горизонтали/вертикали
 							if (i == 0 || i == 2 || i == 6 || i == 8)
@@ -161,12 +163,13 @@ package
 							var tempH:int = (Math.abs(global.nodes[_x][_y].x - dest.x) + Math.abs(global.nodes[_x][_y].y - dest.y)) * 5; //манхетен
 							if (oList.indexOf(global.nodes[_x][_y]) < 0)
 							{
-								oList.push(global.nodes[_x][_y]); sortFlag = true;
+								oList.push(global.nodes[_x][_y]);
 								global.nodes[_x][_y].g += tempG;
 								global.nodes[_x][_y].h = tempH
 								//global.nodes[_x][_y].h = 10*Math.sqrt((global.nodes[_x][_y].x - dest.x) * (global.nodes[_x][_y].x - dest.x) + (global.nodes[_x][_y].y - dest.y) * (global.nodes[_x][_y].y - dest.y));//euqlid
 								global.nodes[_x][_y].f = global.nodes[_x][_y].g + global.nodes[_x][_y].h;
-								//trace(global.nodes[_x][_y].nodeName, global.nodes[_x][_y].k);
+								//trace(global.nodes[_x][_y].nodeName, global.nodes[_x][_y].f);
+								
 								global.nodes[_x][_y].parentNode = currentNode;
 							}
 							else

@@ -16,6 +16,7 @@ package
 		public var h:int;
 		public var f:int;
 		public var k:int;
+		public var cList:Boolean;
 		public var nodeName:String;
 		private var count:int;
 		private var full:Vector.<int> = new Vector.<int>();
