@@ -30,11 +30,12 @@ package
 		public function enemy(x:int, y:int)
 		{
 			
-			path = global.findPath(0,4,10,9);
+			path = global.findPath(global.nodes[0][4], global.nodes[10][9]);
+			//path = global.findPath(global.nodes[0][4], global.nodes[3][6]);
 			this.x = curX = targetX = path[0].mapX;
 			this.y = curY = targetY = path[0].mapY;
-			sprite.graphics.beginFill(0xCC3333);
-			sprite.graphics.drawRect(0, 0, 10, 10);
+			sprite.graphics.beginFill(0xCC3333);	
+		sprite.graphics.drawRect(0, 0, 10, 10);
 			sprite.graphics.endFill();
 			addChild(sprite);
 			addEventListener(Event.ENTER_FRAME, draw);

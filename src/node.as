@@ -12,11 +12,10 @@ package
 		public var mapX:int;
 		public var mapY:int;
 		public var parentNode:node;
-		public var g:int;
-		public var h:int;
-		public var f:int;
-		public var k:int;
-		public var cList:Boolean;
+		public var g:int=0;
+		public var h:int=0;
+		public var f:int=0;
+		public var k:int=0;
 		public var nodeName:String;
 		private var count:int;
 		private var full:Vector.<int> = new Vector.<int>();
@@ -24,7 +23,7 @@ package
 		public function node(_x:int, _y:int, _k:int = 0)
 		{
 			x = _x;
-			y = _y;
+				y = _y;
 			k = _k;
 			nodeName = String(x) + "x" + String(y);
 		}
@@ -38,7 +37,10 @@ package
 			count--;
 			stack[slot] = 0;
 		}
-		
+		public function copy():node {
+			var cpy:node = new node(this.x, this.y, this.k);
+			return cpy;
+		}
 		public function checkSpace():Boolean
 		{
 			if (count < global.UNIT_PER_SECTOR)

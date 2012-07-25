@@ -11,7 +11,7 @@ package
 	import flash.utils.getTimer;
 	import flash.text.TextFieldAutoSize;
 	import flash.utils.Timer;
-	
+		
 	/**
 	 * ...
 	 * @author igorek
@@ -49,7 +49,7 @@ package
 		public static var stat_bulletCount:int = 0;
 		public static var stat_bullHitCount:int = 0;
 		public static var stat_dmgCount:int = 0;
-		public static var nodes:Vector.<Vector.int> = new Vector.<Vector.int>(); //массив нод для поиска пути
+		public static var nodes:Vector.<Vector.<node>> = new Vector.<Vector.<node>>(); //массив нод для поиска пути
 		public static var sectors:Vector.<Vector.<node>> = new Vector.<Vector.<node>>(); //массив нод для поиска пути
 		public static var score:int = 0;
 		public static var money:int = 100;
@@ -124,25 +124,53 @@ package
 			return Math.atan2(y, x) * global.radian + 180;
 		}
 		
-		public static function findPath(sx,sy,dx,dy):Array
-		{
+		public static function chkArray(list:Vector.<node>, _node:node):Boolean {
+			//for (var i:int = 0; i < list.length;i++){
+			for(var i in list){	
+				if (list[i].x == _node.x && list[i].y == _node.y){
+					return true
+				}
+			}
+			return false;
 			
+		}
+		
+		public static function chkDest(cur:node, dest:node):Boolean {
+			if (cur.x != dest.x || cur.y != dest.y) {
+				return true
+			}else {
+				return false
+				}
+		}
+		public static function findPath(start:node, dest:node):Array
+		{
+			var _start:node = start.copy();
 			var path:Array = new Array();
 			var oList:Vector.<node> = new Vector.<node>();
 			var cList:Vector.<node> = new Vector.<node>();
-			var currentNode:node = new node(sx, sy);
+			var currentNode:node = _start;
 			oList.push(currentNode);
 			var timer:int = getTimer();
 			
-			while (currentNode != dest)
+			while (chkDest(currentNode,dest))
 			{
+				
+				
 				var timertmp:int = getTimer();
-				oList.sort(Array.NUMERIC); 
+				//oList.sort(Array.NUMERIC); 
+				var best:node = oList[0];
+				for (var j in oList) {
+					if (best.f > oList[j].f) { best = oList[j];}
+					}
+				currentNode = best;
+					//currentNode = oList[0]; //берем первую ноду
 				//trace(oList.length);
-				currentNode = oList[0]; //берем первую ноду
 				oList.splice(0, 1); //убираем ее из очереди
+				//trace(oList.length);
 				cList.push(currentNode); //добавляем в список проверенных
-				currentNode.cList = true;
+			//	trace(currentNode.x , currentNode.y, dest.x,dest.y);
+				//trace(1);
+				//trace(currentNode.nodeName);
 				for (var i:int = 0; i < 9; i++)
 				{
 					var _x:int = (currentNode.x - 1) + (i % 3);
@@ -151,36 +179,38 @@ package
 					{
 						
 						
-						if (cList.indexOf(global.nodes[_x][_y]) < 0)
-						//if (!global.nodes[_x][_y].cList)
-						{ //если нода не находится в открытом или закрытом листах
+						//if (cList.indexOf(global.nodes[_x][_y]) < 0)
+						var new_node:node = global.nodes[_x][_y].copy();
+						if (!chkArray(cList, new_node))
+						{ //если нода не находится в закрытом листах
 							var cost:int = 10; //цена на переход по горизонтали/вертикали
-							if (i == 0 || i == 2 || i == 6 || i == 8)
+							if (i == 0 || i == 2 || i == 6 || i == 8){cost = 14;} //цена по диагонали
+							
+							var tempG:int = currentNode.g + cost + new_node.k
+							var tempH:int = (Math.abs(new_node.x - dest.x) + Math.abs(new_node.y - dest.y)) * 5; //манхетен
+							
+							//if (oList.indexOf(global.nodes[_x][_y]) < 0)
+							
+							if (!chkArray(oList, new_node))
 							{
-								cost = 14;
-							} //цена по диагонали
-							var tempG:int = currentNode.g + cost + global.nodes[_x][_y].k
-							var tempH:int = (Math.abs(global.nodes[_x][_y].x - dest.x) + Math.abs(global.nodes[_x][_y].y - dest.y)) * 5; //манхетен
-							if (oList.indexOf(global.nodes[_x][_y]) < 0)
-							{
-								oList.push(global.nodes[_x][_y]);
-								global.nodes[_x][_y].g += tempG;
-								global.nodes[_x][_y].h = tempH
-								//global.nodes[_x][_y].h = 10*Math.sqrt((global.nodes[_x][_y].x - dest.x) * (global.nodes[_x][_y].x - dest.x) + (global.nodes[_x][_y].y - dest.y) * (global.nodes[_x][_y].y - dest.y));//euqlid
-								global.nodes[_x][_y].f = global.nodes[_x][_y].g + global.nodes[_x][_y].h;
-								//trace(global.nodes[_x][_y].nodeName, global.nodes[_x][_y].f);
 								
-								global.nodes[_x][_y].parentNode = currentNode;
+								oList.push(new_node); 
+								new_node.g += tempG;
+								new_node.h = tempH
+								//global.nodes[_x][_y].h = 10*Math.sqrt((global.nodes[_x][_y].x - dest.x) * (global.nodes[_x][_y].x - dest.x) + (global.nodes[_x][_y].y - dest.y) * (global.nodes[_x][_y].y - dest.y));//euqlid
+								new_node.f = new_node.g + new_node.h;
+								//trace(global.nodes[_x][_y].nodeName, global.nodes[_x][_y].k);
+								new_node.parentNode = currentNode;
 							}
 							else
 							{
-								if (global.nodes[_x][_y].g > tempG)
+								if (new_node.g > tempG)
 								{
-									global.nodes[_x][_y].g += tempG;
-									global.nodes[_x][_y].h = tempH;
+									new_node.g += tempG;
+									new_node.h = tempH;
 									//global.nodes[_x][_y].h = 10*Math.sqrt((global.nodes[_x][_y].x - dest.x) * (global.nodes[_x][_y].x - dest.x) + (global.nodes[_x][_y].y - dest.y) * (global.nodes[_x][_y].y - dest.y));//euqlid
-									global.nodes[_x][_y].f = global.nodes[_x][_y].g + global.nodes[_x][_y].h;
-									global.nodes[_x][_y].parentNode = currentNode;
+									new_node.f = new_node.g + new_node.h;
+									new_node.parentNode = currentNode;
 								}
 							}
 							
@@ -200,17 +230,22 @@ package
 				}
 				; //если очень долго то выход
 				*/
-			}
-			trace(getTimer() - timer);
+				//trace(getTimer() - timer);
+				}
 			
-			var _node:node = dest;
+			
+			
+			
+			
+			
+			var _node:node = currentNode;
 			path.push(_node);
-			while (_node != start)
+			while (_node != _start)
 			{
 				_node = _node.parentNode;
 				path.unshift(_node);
 			}
-			trace(getTimer() - timer);
+			//trace(getTimer() - timer);
 			var len:int = path.length;
 			path[0].mapX = (path[0].x + path[0].x + path[1].x) / 3 * TILE_WIDTH;
 			path[0].mapY = (path[0].y + path[0].y + path[1].y) / 3 * TILE_HEIGHT;

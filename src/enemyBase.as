@@ -25,7 +25,7 @@ package
 			global.time = global.levelInfo.wave[0][0].startTimer;
 			waveTimer.start();
 			waveTimer.addEventListener(TimerEvent.TIMER, waveTick);
-			waveTimer.addEventListener(TimerEvent.TIMER_COMPLETE, waveStart);
+			waveTimer.addEventListener(TimerEvent.TIMER_COMPLETE, waveStart);	
 			//запускаем таймер спавна wave[0][0]
 			spawnTimer = new Timer(global.levelInfo.wave[0][0].startTimer*1000, 1);//trace('start spawnTimer', global.levelInfo.wave[0][0].startTimer);
 			spawnTimer.start();

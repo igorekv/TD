@@ -39,7 +39,7 @@ package
 			addChild(sprite);
 			addEventListener(MouseEvent.CLICK, onclick);
 			addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-			
+				
 		}
 		private function mouseDown(e:MouseEvent):void {
 			global.startSelect = true;

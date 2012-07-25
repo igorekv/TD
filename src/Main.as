@@ -146,7 +146,7 @@ package
 			
 			//солдатики---------------
 			foeBase = new enemyBase();
-			global.uiMenu.layer1.addChild(foeBase);
+			global.uiMenu.layer1.addChild(foeBase);	
 			mariner = new soldier(20, 20);
 			global.myArmy.push(mariner);
 			global.uiMenu.layer1.addChild(mariner);

@@ -19,7 +19,7 @@ package
 		private var money:TextField;
 		public function userInterface(){
 			uiMenu.addChild(layer1);
-			uiMenu.addChild(layer2);
+			uiMenu.addChild(layer2);	
 			uiMenu.addChild(layer3);
 			score = global.prepText("score:" + numToStr(global.score, 6), fontSize, 0xFFFFFF);
 			money = global.prepText("money:"+numToStr(global.money, 5),fontSize,0xFFFFFF);

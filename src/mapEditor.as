@@ -11,7 +11,7 @@ package
 	import flash.display.Sprite;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
-	
+		
 	public class mapEditor extends Sprite
 	{
 		private var mapWidth:int = 10;
