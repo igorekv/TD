@@ -30,7 +30,8 @@ package
 		private var ballisticOld:Number = 0;
 		private var frame:int = 0;
 		private var damage:int;
-		private var hitTestBox:Shape = new Shape();;
+		private var hitTestBox:Shape = new Shape();
+		public var toRemove:Boolean = false;
 		
 		public function bullet(bType:int, bAngle:int,dmg:int,dist:int)
 		{
@@ -88,7 +89,8 @@ package
 			if (bulletRange/bulletSpeed == bulletDist)
 			{
 				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
-				parent.removeChild(this);
+				toRemove = true;
+				//parent.removeChild(this);
 				//trace('boom');
 			}else{
 			bulletDist++;
@@ -104,8 +106,10 @@ package
 				{
 			if (global.foeArmy[i]!=null && hitTestBox.hitTestObject(global.foeArmy[i].sprite)) { 
 				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
-				parent.removeChild(this);
+				//parent.removeChild(this);
+				toRemove = true;
 				global.foeArmy[i].hit(damage);
+				break;
 				}
 				}
 		}

@@ -22,7 +22,14 @@ package
 		
 		//библиотека картинок
 		public static const STAGE_WIDTH:int = 640;
-		public static const STAGE_HEIGHT:int = 480;
+		public static const STAGE_HEIGHT:int = 500;
+		public static const MAP_WIDTH:int = 640;
+		public static const MAP_HEIGHT:int = 240;
+		public static const TOPMENU_HEIGHT:int = 20;
+		public static var LEVEL_WIDTH:int = 31;
+		public static var LEVEL_HEIGHT:int = 15;
+		public static var LEVEL_TARGET_X:int;
+		public static var LEVEL_TARGET_Y:int;
 		public static const FIRE:int = 0;
 		public static const SMOKE:int = 2;
 		public static var smoke:Bitmap = new Bitmap();
@@ -32,14 +39,16 @@ package
 		public static var levelInfo:Object = new Object();
 		public static const TILE_HEIGHT:int = 16;
 		public static const TILE_WIDTH:int = 16;
-		public static const NODES_PER_SECTOR = 4;
-		public static const UNIT_PER_SECTOR = 6;
+		public static const NODES_PER_SECTOR:int = 4;
+		public static const UNIT_PER_SECTOR:int = 6;
 		public static const radian:Number = 180 / Math.PI;
 		public static const degree:Number = Math.PI / 180;
 		public static var levelTime:Timer = new Timer(1000);
 		public static var lastWave:Boolean = false;
 		public static var waveNumber:int = 0;
+		public static var ownBase:myBase;
 		public static var myArmy:Array = new Array(); //массив с солдатами
+		public static var foeBase:enemyBase;
 		public static var foeArmy:Array = new Array(); //массив с врагами
 		public static var loadQueue:int = 0;
 		public static var loadStatus:int = 0;
@@ -54,9 +63,14 @@ package
 		public static var score:int = 0;
 		public static var money:int = 100;
 		public static var time:int = 60;
+		public static var lives:int = 10;
 		public static var uiMenu:userInterface; 
 		public static const SECTOR_WIDTH:int = TILE_WIDTH * NODES_PER_SECTOR;
 		public static const SECTOR_HEIGHT:int = TILE_HEIGHT * NODES_PER_SECTOR;
+		public static const MODE_GAME:String = 'mode_game';
+		public static const MODE_OVER:String = 'mode_over';
+		public static const MODE_BUILD:String = 'mode_build';
+		public static var gameModeFlag:String = "";
 		
 		//public static var nodes:Array = new Array();//массив для a*
 		public function global()
@@ -109,15 +123,25 @@ package
 		{
 			for (var i:int = 0; i < foeArmy.length; i++)
 			{
-				if (foeArmy[i].toDelete)
+				if (foeArmy[i].toRemove)
 				{
-					trace("deleting", foeArmy[i].name);
+					uiMenu.layer1.removeChild(foeArmy[i]);
+					//trace("deleting", foeArmy[i].name);
 					foeArmy.splice(i, 1);
 					tmp = true;
 					
 				}
 			}
 		}
+		public static function gameMode():String {
+			return gameModeFlag;
+		}
+		
+		public static function changeGameMode(str:String):void {
+			//trace(str);
+			gameModeFlag = str;
+		}
+		
 		
 		public static function getAngle(x:int, y:int):int
 		{
@@ -155,41 +179,33 @@ package
 			while (chkDest(currentNode,dest))
 			{
 				
-				
+				//trace(currentNode.nodeName);//трейс
 				var timertmp:int = getTimer();
-				//oList.sort(Array.NUMERIC); 
 				var best:node = oList[0];
+				var oListPos:int = 0;
 				for (var j in oList) {
-					if (best.f > oList[j].f) { best = oList[j];}
+					if (best.f > oList[j].f) { best = oList[j]; oListPos=j }
 					}
 				currentNode = best;
-					//currentNode = oList[0]; //берем первую ноду
-				//trace(oList.length);
-				oList.splice(0, 1); //убираем ее из очереди
-				//trace(oList.length);
+				
+				oList.splice(oListPos, 1); //убираем ее из очереди
+			
 				cList.push(currentNode); //добавляем в список проверенных
-			//	trace(currentNode.x , currentNode.y, dest.x,dest.y);
-				//trace(1);
-				//trace(currentNode.nodeName);
 				for (var i:int = 0; i < 9; i++)
 				{
 					var _x:int = (currentNode.x - 1) + (i % 3);
 					var _y:int = (currentNode.y - 1) + int(i / 3);
 					if ((_x >= 0 && _x < global.nodes.length) && (_y >= 0 && _y < global.nodes[0].length))
 					{
-						
-						
-						//if (cList.indexOf(global.nodes[_x][_y]) < 0)
-						var new_node:node = global.nodes[_x][_y].copy();
+					var new_node:node = global.nodes[_x][_y].copy();
 						if (!chkArray(cList, new_node))
+						
 						{ //если нода не находится в закрытом листах
 							var cost:int = 10; //цена на переход по горизонтали/вертикали
 							if (i == 0 || i == 2 || i == 6 || i == 8){cost = 14;} //цена по диагонали
 							
 							var tempG:int = currentNode.g + cost + new_node.k
-							var tempH:int = (Math.abs(new_node.x - dest.x) + Math.abs(new_node.y - dest.y)) * 5; //манхетен
-							
-							//if (oList.indexOf(global.nodes[_x][_y]) < 0)
+							var tempH:int = (Math.abs(new_node.x - dest.x) + Math.abs(new_node.y - dest.y)) * 10; //манхетен
 							
 							if (!chkArray(oList, new_node))
 							{
@@ -197,9 +213,7 @@ package
 								oList.push(new_node); 
 								new_node.g += tempG;
 								new_node.h = tempH
-								//global.nodes[_x][_y].h = 10*Math.sqrt((global.nodes[_x][_y].x - dest.x) * (global.nodes[_x][_y].x - dest.x) + (global.nodes[_x][_y].y - dest.y) * (global.nodes[_x][_y].y - dest.y));//euqlid
 								new_node.f = new_node.g + new_node.h;
-								//trace(global.nodes[_x][_y].nodeName, global.nodes[_x][_y].k);
 								new_node.parentNode = currentNode;
 							}
 							else
@@ -214,26 +228,14 @@ package
 								}
 							}
 							
-								//trace("node:", global.nodes[_x][_y].nodeName, "go:", cost, "heuristic:", global.nodes[_x][_y].h,"weight:",global.nodes[_x][_y].k,"full:",global.nodes[_x][_y].f);
 							
 						}
 					}
-					;
+					
 				}
-				
-				//if (start != currentNode) { trace("curent node:", currentNode.nodeName,"parentNode:",currentNode.parentNode.nodeName);}// trace(oList);
-				//oList.sort();
-				/*
-				if (getTimer() - timer >= 10000)
-				{
-					break;
-				}
-				; //если очень долго то выход
-				*/
-				//trace(getTimer() - timer);
-				}
+			}
 			
-			
+			//trace(getTimer() - timer);
 			
 			
 			
@@ -245,7 +247,7 @@ package
 				_node = _node.parentNode;
 				path.unshift(_node);
 			}
-			//trace(getTimer() - timer);
+			
 			var len:int = path.length;
 			path[0].mapX = (path[0].x + path[0].x + path[1].x) / 3 * TILE_WIDTH;
 			path[0].mapY = (path[0].y + path[0].y + path[1].y) / 3 * TILE_HEIGHT;
@@ -256,16 +258,22 @@ package
 			}
 			path[len - 1].mapX = (path[len - 2].x + path[len - 1].x + path[len - 1].x) / 3 * TILE_WIDTH;
 			path[len - 1].mapY = (path[len - 2].y + path[len - 1].y + path[len - 1].y) / 3 * TILE_HEIGHT;
-			trace(getTimer() - timer);
+			//trace(getTimer() - timer);
+			
 			return path;
 		}
 	
-	/*
-	   public function checkList(_node:node,) {
-	   for (var i:int = 0; i < 9; i++) {
-	
-	   }
-	 */
+		public static function cleanSelection():void {
+			var len:int = global.myArmy.length;
+						for (var i:int= 0; i < len; i++)
+						{
+							if (global.myArmy[i].select)
+							{
+								global.myArmy[i].select = false;
+							}
+							
+						}
+		}
 	
 	}
 

@@ -28,10 +28,14 @@ package
 			
 		}
 		
+
+		
 		public function select(x:int, y:int):void {
 			var len:int = global.myArmy.length;
 		for (var i:int = 0; i < len; i++) {
-			if (mX < global.myArmy[i].x && global.myArmy[i].x < x && mY < global.myArmy[i].y && global.myArmy[i].y < y ) { global.myArmy[i].select = true; };
+			//if (mX < global.myArmy[i].x && global.myArmy[i].x < x && mY < global.myArmy[i].y && global.myArmy[i].y < y ) 
+			if (this.hitTestObject(global.myArmy[i]))
+			{ global.myArmy[i].select = true; };
 			}
 		}
 	}

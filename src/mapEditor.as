@@ -72,7 +72,7 @@ package
 		}
 		
 		private function setTile(e:MouseEvent):void {
-			trace(global.levelBitmap.bitmapData.getPixel(int(e.localX/tileWidth),int(e.localY/tileHeight)));
+			//trace(global.levelBitmap.bitmapData.getPixel(int(e.localX/tileWidth),int(e.localY/tileHeight)));
 			global.levelBitmap.bitmapData.setPixel(int(e.localX / tileWidth), int(e.localY / tileHeight), currentTile);
 			desk.updateMap();
 			}

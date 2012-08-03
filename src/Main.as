@@ -37,8 +37,10 @@ package
 		private var mariner:soldier;
 		private var dummy:enemy;
 		private var menu:Sprite = new Sprite();//экран с меню
+		private var gest:gestures;
 		
-		private var foeBase:enemyBase;
+		
+		private var oldGameMode:String = "";
 		public function Main()
 		{
 			
@@ -93,7 +95,7 @@ package
 			
 		}
 		
-		private function showMenu() {
+		private function showMenu():void {
 			
 			
 			menu.graphics.beginFill(0x333333);
@@ -114,18 +116,17 @@ package
 			
 		}
 		
-		private function menuPlay(e:MouseEvent) {
+		private function menuPlay(e:MouseEvent):void {
 			e.target.removeEventListener(MouseEvent.CLICK, menuPlay);
 			removeChild(menu);
 			showGame();
 			//addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		}
 		
-		private function showGame() {
+		private function showGame():void {
+			gest = new gestures(stage);
 			
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
-			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+			global.changeGameMode(global.MODE_GAME);
 			
 			global.uiMenu= new userInterface();
 			//addChild(global.prepText("tst1 level 1", 14, 0xFFFFFF));
@@ -138,6 +139,7 @@ package
 			parseLevel();
 			mapLevel = new map(1);
 			//mapLevel.scaleX = mapLevel.scaleY=0.5;
+			mapLevel.y = global.TOPMENU_HEIGHT;
 			//global.uiMenu.layer1.addChild(mapLevel);
 			//юзеринтерфейс
 			addChild(global.uiMenu);
@@ -145,13 +147,17 @@ package
 			global.levelTime.start();
 			
 			//солдатики---------------
-			foeBase = new enemyBase();
-			global.uiMenu.layer1.addChild(foeBase);	
-			mariner = new soldier(20, 20);
+			
+			global.foeBase = new enemyBase();
+			global.uiMenu.layer1.addChild(global.foeBase);	
+			
+			
+			/*
+			mariner = new soldier(50, 80);
 			global.myArmy.push(mariner);
 			global.uiMenu.layer1.addChild(mariner);
 			
-			mariner = new soldier(20, 20);
+			mariner = new soldier(60, 90);
 			global.myArmy.push(mariner);
 			global.uiMenu.layer1.addChild(mariner);
 			
@@ -177,37 +183,102 @@ package
 			addEventListener(Event.ENTER_FRAME,onEnterFrame)
 		}
 		
-		
+		private function showOver():void {
+			//геймоверскрин
+			
+			
+			
+			
+			removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+		}
 		private function parseLevel():void {
 			var strings:Array = global.levelInfo.text.split('\r\n');
-			global.levelInfo.levelName = strings[0];//название уровня
-			
+			var infoTmp:Array = strings[0].split(',');
+			global.levelInfo.levelName = infoTmp[0];//название уровня
+		global.LEVEL_TARGET_X = infoTmp[1];
+		global.LEVEL_TARGET_Y = infoTmp[2];
 			
 			
 			global.levelInfo.wave = new Array();
 			
 			for (var wv:int = 0; wv < strings.length-1;wv++ ){//волны
 				global.levelInfo.wave[wv] = new Array();
-				var elements:Array = strings[wv+1].split(';');
-				var fullTime = 0;
-				for (var i = 0; i < elements.length; i++) {
-					var unitTmp = elements[i].split(',');
+				var elements:Array = strings[wv+1].split(';');//разбиваем на строчки
+				var fullTime:int = 0;
+				for (var i:int = 0; i < elements.length; i++) {
+					var unitTmp:Array = elements[i].split(',');
 					fullTime += int(unitTmp[0]);
-					global.levelInfo.wave[wv][i] = new waveElement(unitTmp[0], unitTmp[1], fullTime);
+					global.levelInfo.wave[wv][i] = new waveElement(unitTmp[0], unitTmp[1],unitTmp[2], fullTime);
 					if (i == 0) { fullTime = 0;}
 					//trace(i,int(fullTime));
 				}
 				
 			}
-			trace(global.levelInfo.wave[0][0].startTimer);
+			//trace(global.levelInfo.wave[0][0].startTimer);
 			
 			}
 			
+			private function changeGameMode(cur:String):void {
+				if (cur == global.MODE_GAME) {
+					stage.addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+					stage.addEventListener(MouseEvent.MOUSE_UP, mouseUp);
+					stage.addEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+					
+					}
+				if (oldGameMode == global.MODE_GAME) {
+					stage.removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+					stage.removeEventListener(MouseEvent.MOUSE_UP, mouseUp);
+					stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMove);
+				}
+				
+				if (cur == global.MODE_BUILD) {
+					stage.addEventListener(MouseEvent.MOUSE_MOVE, buildMouseMove);
+					stage.addEventListener(MouseEvent.CLICK, buildClick);
+				}
+				if (oldGameMode == global.MODE_BUILD) {
+					stage.removeEventListener(MouseEvent.MOUSE_MOVE, buildMouseMove);
+					stage.removeEventListener(MouseEvent.CLICK, buildClick);
+					}
+				if (cur == global.MODE_OVER) {
+					trace('gameover');
+				}
+				
+			}
 			
-		private function onEnterFrame(e:Event):void
-		{
-			global.score++;
+			private function buildMouseMove(e:MouseEvent):void {
+				global.ownBase.x = int(mouseX/global.SECTOR_WIDTH)*global.SECTOR_WIDTH;
+				global.ownBase.y  = int(mouseY / global.SECTOR_HEIGHT) * global.SECTOR_HEIGHT;
+				
+			}
 			
+			private function buildClick(e:MouseEvent):void {
+				if (e.stageY > global.TOPMENU_HEIGHT && e.stageY < global.TOPMENU_HEIGHT + global.MAP_HEIGHT) {
+					global.changeGameMode(global.MODE_GAME);
+					global.ownBase.build();
+				}
+			}
+			
+		private function onEnterFrame(e:Event):void	{
+			global.cleanGarbage();
+			if (global.lives == 0) {//gmover
+				changeGameMode(global.MODE_OVER);
+				showOver();
+				}
+			if (global.gameMode() != oldGameMode) { changeGameMode(global.gameMode());oldGameMode=global.gameMode() }
+			
+			if(global.gameMode()==global.MODE_GAME){ //игровой режим
+			if (gest.check(gest.CANCEL)) {
+				
+				global.cleanSelection();
+			}
+			
+			
+			}
+			if (global.gameMode() == global.MODE_BUILD) { 
+				if (gest.check(gest.CANCEL)) {global.changeGameMode(global.MODE_GAME)}
+				
+				
+			}
 			
 			if (frame == 6)
 			{
@@ -215,17 +286,13 @@ package
 				frame = 0;
 			}
 			frame++;
-		global.cleanGarbage();
+		
 		//trace(global.stat_bulletCount, global.stat_bullHitCount);
 		}
 		
 		private function mouseDown(e:MouseEvent):void
 		{
-			/*var len = global.myArmy.length; for (var i:int= 0; i < len; i++) {
-			   if (global.myArmy[i].select) { global.myArmy[i].select = false; }
 			
-			   };
-			 */
 			global.mouseState = true; //запоминаем координаты мышки в момент нажатия
 			mX = e.stageX;
 			mY = e.stageY;
@@ -265,7 +332,7 @@ package
 		
 		private function click(e:MouseEvent):void
 		{
-		
+		if(e.stageY>global.TOPMENU_HEIGHT && e.stageY<global.TOPMENU_HEIGHT+global.MAP_HEIGHT){
 			if (!global.startSelect)
 			{
 				
@@ -276,10 +343,11 @@ package
 					if (global.myArmy[i].select)
 					{
 						global.myArmy[i].setTarget(e.stageX, e.stageY);
-						global.myArmy[i].select=false;
+						
 					}
 				}
 			}
+		}
 		}
 		
 		private function mouseMove(e:MouseEvent):void
@@ -295,15 +363,7 @@ package
 					if (mouseDelay == 0)
 					{
 						//очищаем выделенные
-						var len:int = global.myArmy.length;
-						for (var i:int= 0; i < len; i++)
-						{
-							if (global.myArmy[i].select)
-							{
-								global.myArmy[i].select = false;
-							}
-							
-						}
+						global.cleanSelection();
 						selection = new selectTool(mX, mY);
 						addChild(selection);
 					}
@@ -316,8 +376,13 @@ package
 					mouseDelay = 0;
 				}
 				
+			}else {
+				if (frame == 1) {
+					
+					
+				}
 			}
-		
+			
 		}
 	
 	}

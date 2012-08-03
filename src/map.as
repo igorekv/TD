@@ -57,7 +57,9 @@ package
 					drawSprite((global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x0000FF), _x, _y);
 					//var tmp:int=(global.levelBitmap.bitmapData.getPixel(_x, _y) & 0x0000FF);
 					//if (tmp < 10) {global.nodes[_x][_y] = new node(_x, _y, 0 );}else{global.nodes[_x][_y] = new node(_x, _y, 50 );}
-						global.nodes[_x][_y] = new node(_x, _y, (global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x0000FF) );
+					var value:int=	(global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x0000FF)
+					if (value > 40) { value = 0;}
+					global.nodes[_x][_y] = new node(_x, _y, value );
 					//drawSprite((global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x00FF00)>>8, _x, _y);
 					//drawSprite((global.levelBitmap.bitmapData.getPixel(_x, _y)& 0xFF0000)>>16,  _x, _y);
 					
@@ -65,8 +67,10 @@ package
 					}
 					//trace(global.nodes[_y]);
 			}
-			trace(global.nodes.length, global.nodes[0].length);
-		}
+			//trace(global.nodes.length, global.nodes[0].length);
+			global.LEVEL_WIDTH = global.nodes.length;
+			global.LEVEL_HEIGHT = global.nodes[0].length;
+			}
 		
 		
 		private function drawSprite(tile:int,x:int,y:int):void

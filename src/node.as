@@ -57,7 +57,7 @@ package
 		public function getPosition():Vector.<int> {
 			if (checkSpace()) { count++; 
 			var slot:int = stack.indexOf(0); stack[slot] = 1;
-			var angle = 360 / global.UNIT_PER_SECTOR * slot;
+			var angle:int = 360 / global.UNIT_PER_SECTOR * slot;
 			var coord:Vector.<int> = new Vector.<int>();
 			coord.push(x*global.SECTOR_WIDTH+global.SECTOR_WIDTH/2+(Math.cos((angle +90)* global.degree) * global.SECTOR_WIDTH*0.3));
 			coord.push(y*global.SECTOR_WIDTH+global.SECTOR_HEIGHT/2+(Math.sin((angle+90) * global.degree) * global.SECTOR_HEIGHT*0.3));
