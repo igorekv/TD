@@ -22,11 +22,11 @@ package {
 		}
 		
 		private function rollover(e:MouseEvent):void {
-			trace("rolover");
+			//trace("rolover");
 		}
 		
 		private function click(e:MouseEvent):void {
-			trace('click');
+			//trace('click');
 			if (type == BUILD){
 				global.cleanSelection();
 				if (global.gameMode() != global.MODE_BUILD) {

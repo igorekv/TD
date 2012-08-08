@@ -37,6 +37,8 @@ package
 		public static var terrainBitmap:Bitmap = new Bitmap();
 		public static var levelBitmap:Bitmap = new Bitmap();
 		public static var levelInfo:Object = new Object();
+		public static var mobConfig:Object = new Object();
+		public static var skill:Array=new Array();
 		public static const TILE_HEIGHT:int = 16;
 		public static const TILE_WIDTH:int = 16;
 		public static const NODES_PER_SECTOR:int = 4;
@@ -65,6 +67,7 @@ package
 		public static var time:int = 60;
 		public static var lives:int = 10;
 		public static var uiMenu:userInterface; 
+		public static var magazine:Vector.<bullet>=new Vector.<bullet>;;
 		public static const SECTOR_WIDTH:int = TILE_WIDTH * NODES_PER_SECTOR;
 		public static const SECTOR_HEIGHT:int = TILE_HEIGHT * NODES_PER_SECTOR;
 		public static const MODE_GAME:String = 'mode_game';
@@ -132,6 +135,26 @@ package
 					
 				}
 			}
+			for (var i:int = 0; i < myArmy.length; i++)
+			{
+				if (myArmy[i].toRemove)
+				{
+					uiMenu.layer1.removeChild(myArmy[i]);
+					//trace("deleting", myArmy[i].name);
+					myArmy.splice(i, 1);
+					tmp = true;
+					
+				}
+			}
+			for (var i:int = 0; i < magazine.length;i++ ) {
+				
+				//trace(">", i);
+				if (magazine[i].toRemove) { 					
+					uiMenu.layer1.removeChild(magazine[i]);
+					magazine.splice(i, 1);
+					}
+			}
+			
 		}
 		public static function gameMode():String {
 			return gameModeFlag;

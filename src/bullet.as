@@ -32,8 +32,9 @@ package
 		private var damage:int;
 		private var hitTestBox:Shape = new Shape();
 		public var toRemove:Boolean = false;
+		private var enemyList:Array;
 		
-		public function bullet(bType:int, bAngle:int,dmg:int,dist:int)
+		public function bullet(bType:int, bAngle:int,dmg:int,dist:int,_enemyList:Array)
 		{
 			
 			bulletRange = dist;
@@ -41,7 +42,7 @@ package
 			hitTestBox.graphics.drawRect(-2, -2, 4, 4);
 			hitTestBox.graphics.endFill();
 			addChild(hitTestBox);
-			
+			enemyList = _enemyList;
 			this.damage = dmg;
 			this.bulletAngle = bAngle
 			this.bulletType = bType;
@@ -102,13 +103,14 @@ package
 		private function checkHit():void {
 			//hitTestObject
 			
-			for (var i:int= 0; i < global.foeArmy.length; i++)
+			for (var i:int= 0; i < enemyList.length; i++)
 				{
-			if (global.foeArmy[i]!=null && hitTestBox.hitTestObject(global.foeArmy[i].sprite)) { 
+			if (enemyList[i]!=null && hitTestBox.hitTestObject(enemyList[i].sprite)) { 
 				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 				//parent.removeChild(this);
-				toRemove = true;
-				global.foeArmy[i].hit(damage);
+				
+				this.toRemove = true;
+				enemyList[i].hit(damage);
 				break;
 				}
 				}

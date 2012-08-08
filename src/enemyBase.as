@@ -36,30 +36,9 @@ package
 			
 		}
 		
-		private function waveTick(e:TimerEvent):void {
-			//trace(global.levelTime.currentCount);
-			global.time--; 
-		}
-		
-		private function waveStart(e:TimerEvent):void {
-			//считаем все секунды до конца + первое время следующей волны если она есть
-			if(!Finish){
-			var newTimer:int = global.levelInfo.wave[waveNumber][(global.levelInfo.wave[waveNumber].length - 1)].fullTime;
-			if (waveNumber + 1 < global.levelInfo.wave.length) { newTimer += +global.levelInfo.wave[waveNumber + 1][0].fullTime; } else { global.lastWave = true; }
-			waveTimer = new Timer(1000, newTimer/ms); 
-			global.time = newTimer/ms;
-			waveTimer.start();
-			waveTimer.addEventListener(TimerEvent.TIMER, waveTick);
-			waveTimer.addEventListener(TimerEvent.TIMER_COMPLETE, waveStart);
-			}
-			
-			//trace('wave', newTimer);
-			
-		}
-	
 		private function spawn(e:TimerEvent):void {
 			
-			var dummy:enemy = new enemy(0,global.levelInfo.wave[waveNumber][counter].startPos, global.levelInfo.wave[waveNumber][counter].unitHealth);
+			var dummy:enemy = new enemy(0,global.levelInfo.wave[waveNumber][counter].startPos, global.levelInfo.wave[waveNumber][counter].unitLevel);
 			global.foeArmy.push(dummy);
 			global.uiMenu.layer1.addChild(dummy);
 			
@@ -85,8 +64,33 @@ package
 			
 		}
 		
+		
+		
+		private function waveTick(e:TimerEvent):void {
+			//trace(global.levelTime.currentCount);
+			global.time--; 
+		}
+		
+		private function waveStart(e:TimerEvent):void {
+			//считаем все секунды до конца + первое время следующей волны если она есть
+			if(!Finish){
+			var newTimer:int = global.levelInfo.wave[waveNumber][(global.levelInfo.wave[waveNumber].length - 1)].fullTime;
+			if (waveNumber + 1 < global.levelInfo.wave.length) { newTimer += +global.levelInfo.wave[waveNumber + 1][0].fullTime; } else { global.lastWave = true; }
+			waveTimer = new Timer(1000, newTimer/ms); 
+			global.time = newTimer/ms;
+			waveTimer.start();
+			waveTimer.addEventListener(TimerEvent.TIMER, waveTick);
+			waveTimer.addEventListener(TimerEvent.TIMER_COMPLETE, waveStart);
+			}
+			
+			//trace('wave', newTimer);
+			
+		}
+	
+		
+		
 		public function findNewPath() {
-			trace(global.foeArmy.length);
+			//trace(global.foeArmy.length);
 			for (var i = 0; i < global.foeArmy.length;i++ ) {
 				
 				global.foeArmy[i].findNewPath();

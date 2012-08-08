@@ -28,7 +28,7 @@ package
 		private var frame:int = 0;
 		private var mapLevel:map;
 		private var mapEdit:mapEditor;
-		private const MOUSEDELAY:int = 5; //чувствительность мышки к кликам или выделению
+		private const MOUSEDELAY:int = 10; //чувствительность мышки к кликам или выделению
 		private var mouseDelay:int = MOUSEDELAY;
 		private var selection:selectTool;
 		private var mX:int;
@@ -38,9 +38,9 @@ package
 		private var dummy:enemy;
 		private var menu:Sprite = new Sprite();//экран с меню
 		private var gest:gestures;
-		
-		
 		private var oldGameMode:String = "";
+		
+		
 		public function Main()
 		{
 			
@@ -48,6 +48,7 @@ package
 			global.loadBitmap("terrain2.png", global.terrainBitmap);
 			global.loadBitmap("level4.png", global.levelBitmap);
 			global.loadText('level1.txt', global.levelInfo);
+			global.loadText('mobConfig.txt', global.mobConfig);
 			if (stage)
 				init();
 			else
@@ -137,6 +138,7 @@ package
 			
 			//карта----------------------------
 			parseLevel();
+			prepareConfig();
 			mapLevel = new map(1);
 			//mapLevel.scaleX = mapLevel.scaleY=0.5;
 			mapLevel.y = global.TOPMENU_HEIGHT;
@@ -152,18 +154,19 @@ package
 			global.uiMenu.layer1.addChild(global.foeBase);	
 			
 			
-			/*
+			
 			mariner = new soldier(50, 80);
 			global.myArmy.push(mariner);
 			global.uiMenu.layer1.addChild(mariner);
 			
+			/*
 			mariner = new soldier(60, 90);
 			global.myArmy.push(mariner);
 			global.uiMenu.layer1.addChild(mariner);
 			
 			mariner = new soldier(200, 100);
 			global.myArmy.push(mariner);
-			addChild(mariner);
+			global.uiMenu.layer1.addChild(mariner);
 			
 			//враги-----------------------
 			/*
@@ -191,6 +194,27 @@ package
 			
 			removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 		}
+		private function prepareConfig() {
+			
+			
+			var strings:Array = global.mobConfig.text.split('\r\n');
+			//global.skill.push(new Array());
+			for (var i:int = 1; i < strings.length; i++) {
+				var infoTmp:Array=strings[i].split(',');
+				global.skill[i]=new Array();
+				global.skill[i]['life'] = infoTmp[0];
+				global.skill[i]['speed'] =infoTmp[1];
+				global.skill[i]['fireRate'] =infoTmp[2];
+				global.skill[i]['damage'] =infoTmp[3];
+				
+				
+			}
+			
+			
+		}
+		
+		
+		
 		private function parseLevel():void {
 			var strings:Array = global.levelInfo.text.split('\r\n');
 			var infoTmp:Array = strings[0].split(',');
@@ -207,7 +231,7 @@ package
 				var fullTime:int = 0;
 				for (var i:int = 0; i < elements.length; i++) {
 					var unitTmp:Array = elements[i].split(',');
-					fullTime += int(unitTmp[0]);
+					fullTime += int(unitTmp[0]);//					timer, 	   health,    startPos,   fulltime
 					global.levelInfo.wave[wv][i] = new waveElement(unitTmp[0], unitTmp[1],unitTmp[2], fullTime);
 					if (i == 0) { fullTime = 0;}
 					//trace(i,int(fullTime));

@@ -3,50 +3,57 @@ package
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+
 	
 	/**
 	 * ...
 	 * @author igorek
 	 */
-	public class enemy extends Sprite
+	public class enemy extends buddy
 	{
 		private var state:int;
 		private const STAY:int = 0;
 		private const WALK:int = 1;
 		private const FIRE:int = 2;
-		public var sprite:Sprite = new Sprite();
+		
 		public var select:Boolean = false;
-		public var life:int = 100;
-		public var toDelete:Boolean = false;
-		public var toRemove:Boolean = false;
-		private var targetX:int;
-		private var targetY:int;
 		private var checkpoint:int = 0;
 		private var curX:Number;
 		private var curY:Number;
-		private var statBar:statusBar;
 		private var path:Array = new Array();
-		private var speed:int = 1;
-		private var deadCount:int = 5;
 		
-		public function enemy(_x:int, _y:int,_health:int)
+		private var deadCount:int = 5;
+		public function enemy(_x:int, _y:int,_level:int)
 		{
 			this.x = _x;
 			this.y = _y;
-			life = _health;
+			life = global.skill[_level].life;
+			damage = global.skill[_level].damage;
+			speed = global.skill[_level].speed;
+			rateofFire = global.skill[_level].fireRate;
+			
 			findNewPath();
-			//trace(tx,ty);
+			//trace("enemylife:",_health);
 			//path = global.findPath(global.nodes[0][4], global.nodes[3][6]);
-			this.x = curX = targetX = path[0].mapX;
-			this.y = curY = targetY = path[0].mapY;
+			this.x = curX  = path[0].mapX;
+			this.y = curY  = path[0].mapY;
 			sprite.graphics.beginFill(0xCC3333,0.1);	
-		sprite.graphics.drawRect(0, 0, 10, 10);
+		sprite.graphics.drawRect(0, 0, 16, 16);
 			sprite.graphics.endFill();
 			addChild(sprite);
-			addEventListener(Event.ENTER_FRAME, draw);
+			//addEventListener(Event.ENTER_FRAME, draw);
 			
-			statBar = new statusBar(life, 100, this.width);
+			mainTimer = new Timer(25);
+			mainTimer.start();
+			
+			mainTimer.addEventListener(TimerEvent.TIMER, draw);
+			
+			statBar = new statusBar(life,100);
 			addChild(statBar);
+			statBar.setWidth(this.width);
+			
 		
 		}
 		
@@ -75,10 +82,7 @@ package
 		
 		
 		
-		private function destCalc(x:int, y:int):Number
-		{
-			return Math.sqrt((x * x) + (y * y));
-		}
+		
 		
 		public function findNewPath() {
 			var tx:int = global.LEVEL_TARGET_X; var ty:int = global.LEVEL_TARGET_Y;
@@ -89,13 +93,21 @@ package
 		}
 		
 		
-		private function draw(e:Event):void
+		private function draw(e:TimerEvent):void
 		{
+			
+			
+			intTimer++;
+			if (intTimer == 3 || intTimer == 6 || intTimer == 9  ) { global.cleanGarbage(); }
+			
+			checkFire(global.myArmy);
 			if (toDelete) {//действия при смерти
 				if (deadCount < 0) { 
 					//удаление обьекта
 					this.toRemove = true; 
-					this.removeEventListener(Event.ENTER_FRAME, draw);
+					mainTimer.stop();
+					mainTimer.removeEventListener(TimerEvent.TIMER, draw);
+					//this.removeEventListener(Event.ENTER_FRAME, draw);
 					}
 				deadCount--;
 				
@@ -105,8 +117,8 @@ package
 			{//если растояние до чекпойнта  больше 1 то двигаться
 				
 				var len:Number = destCalc(Math.abs(curX - path[checkpoint].mapX), Math.abs(curY - path[checkpoint].mapY));
-				curX += (path[checkpoint].mapX - curX) / (len / speed);
-				curY += (path[checkpoint].mapY - curY) / (len / speed);
+				curX += (path[checkpoint].mapX - curX) / (len / (speed/2));
+				curY += (path[checkpoint].mapY - curY) / (len / (speed/2));
 				
 			}
 			this.x = curX;
@@ -123,7 +135,7 @@ package
 				
 				if (Math.abs((this.x/global.TILE_WIDTH)-global.LEVEL_TARGET_X)<=1 && Math.abs((this.y/global.TILE_HEIGHT)-global.LEVEL_TARGET_Y)<=1  ) {//если дошел до финиша
 					global.lives--;
-					trace("finish");
+					//trace("finish");
 					this.toDelete = true;
 					deadCount = 0;
 					
@@ -140,13 +152,13 @@ package
 				}
 				
 				
-				/*
-				this.x = curX = targetX = path[0].mapX;
-				this.y = curY = targetY = path[0].mapY;
-				*/
+				
 			}
 		
 			}
+			
+			if (intTimer >= 10) { intTimer = 0;}
+			
 		}
 	
 	}

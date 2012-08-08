@@ -15,7 +15,8 @@ package
 			
 			maxLife = life;
 			Width = wdth + (life / 100);
-			sprite.x = (wdth / 2) - (Width / 2);
+			trace("widht:", Width);
+			//sprite.x = 5-(Width/2);
 			sprite.y = -10;
 			addChild(sprite); 
 			draw(life);
@@ -37,6 +38,7 @@ package
 				sprite.graphics.lineStyle(1, 0xFFFFFF, 0.5);
 				sprite.graphics.drawRect(0, 0, Width, 3);
 				sprite.graphics.endFill();
+				
 			}
 			
 		}
@@ -46,6 +48,11 @@ package
 			textFld = global.prepText(num, 12, 0xFFFFFF)
 			textFld.y = -2;
 			addChild(textFld);
+		}
+		
+		public function setWidth(wdth:int) {
+			Width = wdth;
+			draw(maxLife);
 		}
 		
 		private function anim(e:Event):void {
