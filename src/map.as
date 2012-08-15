@@ -67,7 +67,7 @@ package
 					}
 					//trace(global.nodes[_y]);
 			}
-			//trace(global.nodes.length, global.nodes[0].length);
+			trace(global.nodes.length, global.nodes[0].length);
 			global.LEVEL_WIDTH = global.nodes.length;
 			global.LEVEL_HEIGHT = global.nodes[0].length;
 			}

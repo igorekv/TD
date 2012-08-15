@@ -32,10 +32,11 @@ package
 		public static var LEVEL_TARGET_Y:int;
 		public static const FIRE:int = 0;
 		public static const SMOKE:int = 2;
-		public static var smoke:Bitmap = new Bitmap();
-		public static var bulletBitmap:Bitmap = new Bitmap();
-		public static var terrainBitmap:Bitmap = new Bitmap();
-		public static var levelBitmap:Bitmap = new Bitmap();
+		public static var smoke:Bitmap = new Bitmap();//картинка дыма
+		public static var bulletBitmap:Bitmap = new Bitmap();//картинка пуль
+		public static var terrainBitmap:Bitmap = new Bitmap();//картинка карты
+		public static var levelBitmap:Bitmap = new Bitmap();//картинка уровня
+		public static var buttonBitmap:Bitmap = new Bitmap();//картинка уровня
 		public static var levelInfo:Object = new Object();
 		public static var mobConfig:Object = new Object();
 		public static var skill:Array=new Array();
@@ -63,7 +64,7 @@ package
 		public static var nodes:Vector.<Vector.<node>> = new Vector.<Vector.<node>>(); //массив нод для поиска пути
 		public static var sectors:Vector.<Vector.<node>> = new Vector.<Vector.<node>>(); //массив нод для поиска пути
 		public static var score:int = 0;
-		public static var money:int = 100;
+		public static var money:int = 900;//деньги
 		public static var time:int = 60;
 		public static var lives:int = 10;
 		public static var uiMenu:userInterface; 
@@ -165,6 +166,21 @@ package
 			gameModeFlag = str;
 		}
 		
+		public static function destCalc(x1, y1, x2, y2, type):Number {
+			//trace("параметры", x1, y1, x2, y2);
+			var dstx:int = Math.abs(x1 - x2);
+			var dsty:int = Math.abs(y1 - y2);
+			//trace("до цели х", dstx, "до цели у", dsty);
+			var dest:Number=0;
+			if (type == 1) {
+				dest=Math.sqrt((dstx*dstx) + (dsty *dsty));
+			}
+			if (type == 2) {
+				if (dstx > dsty) { dest = 1.4 * dsty + (dstx - dsty);}else{dest = 1.4 * dstx + (dsty - dstx);}
+			}
+			//trace("destination", dest);
+			return dest;
+		}
 		
 		public static function getAngle(x:int, y:int):int
 		{

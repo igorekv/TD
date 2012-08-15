@@ -16,6 +16,7 @@ package
 	import flash.events.MouseEvent;
 	import flash.utils.*;
 	import SWFProfiler;
+	import flash.utils.getTimer;
 	
 	
 	
@@ -47,12 +48,15 @@ package
 			global.loadBitmap("bullet.png", global.bulletBitmap);
 			global.loadBitmap("terrain2.png", global.terrainBitmap);
 			global.loadBitmap("level4.png", global.levelBitmap);
+			global.loadBitmap("buttons.png", global.buttonBitmap);
 			global.loadText('level1.txt', global.levelInfo);
 			global.loadText('mobConfig.txt', global.mobConfig);
+			
 			if (stage)
 				init();
 			else
 				addEventListener(Event.ADDED_TO_STAGE, init);
+				
 		
 		}
 		
@@ -155,7 +159,7 @@ package
 			
 			
 			
-			mariner = new soldier(50, 80);
+			mariner = new soldier(150, 80);
 			global.myArmy.push(mariner);
 			global.uiMenu.layer1.addChild(mariner);
 			
@@ -270,8 +274,12 @@ package
 			}
 			
 			private function buildMouseMove(e:MouseEvent):void {
-				global.ownBase.x = int(mouseX/global.SECTOR_WIDTH)*global.SECTOR_WIDTH;
-				global.ownBase.y  = int(mouseY / global.SECTOR_HEIGHT) * global.SECTOR_HEIGHT;
+				var tmpy:int=int(mouseY / (global.TILE_HEIGHT*3)) * (global.TILE_HEIGHT*3);
+				var tmpx:int=int(mouseX/global.SECTOR_WIDTH)*global.SECTOR_WIDTH;
+				if (((int(mouseY / (global.TILE_HEIGHT * 3))) & 1) != 0) { tmpx += 32; }
+				global.ownBase.x = tmpx;
+				global.ownBase.y  = tmpy;
+				
 				
 			}
 			
@@ -304,9 +312,10 @@ package
 				
 			}
 			
-			if (frame == 6)
+			
+			if (frame == 15)
 			{
-				global.uiMenu.update();
+				if(global.uiMenu.updateUi){global.uiMenu.update();}
 				frame = 0;
 			}
 			frame++;

@@ -13,6 +13,8 @@ package
 		public var layer1:Sprite = new Sprite();
 		private var layer2:Sprite = new Sprite();
 		private var layer3:Sprite = new Sprite();
+		public var updateUi:Boolean = false;
+		private var buttons:Vector.<button>=new Vector.<button>;
 		private var fontSize:int = 14;
 		private var time:TextField;
 		private var score:TextField;
@@ -21,7 +23,7 @@ package
 		private var btn0:button;
 		private var menuPos_y:int = global.MAP_HEIGHT+global.TOPMENU_HEIGHT;
 		public function userInterface(){
-
+			
 			uiMenu.addChild(layer1);
 			uiMenu.addChild(layer2);	
 			uiMenu.addChild(layer3);
@@ -36,15 +38,21 @@ package
 			lives = global.prepText("lives:"+numToStr(global.lives, 2),fontSize,0xFFFFFF);
 			lives.x = 360;
 			
-			btn0 = new button(button.BUILD);
-			btn0.y = menuPos_y;
-			
+			btn0 = new button(button.BUILD,100);
+			btn0.y = menuPos_y; btn0.x = 0;
+			buttons.push(btn0);
+			btn0 = new button(button.SOLDIER,20);
+			btn0.y = menuPos_y;btn0.x = 50;
+			buttons.push(btn0);
 			
 			layer2.addChild(score);
 			layer2.addChild(lives);
 			layer2.addChild(time);
 			layer2.addChild(money);
-			layer2.addChild(btn0);
+			for (var i:int = 0; i <buttons.length ; i++) //вывод кнопок на интерфейс
+			{
+				layer2.addChild(buttons[i]);
+			}
 			addChild(uiMenu);
 			this.name = "userInterface";
 		}
@@ -56,7 +64,12 @@ package
 		}
 		
 		public function update():void {
-			
+			trace("interface update");
+			for (var i:int = 0; i <buttons.length ; i++) 
+			{
+				buttons[i].update();
+			}
+			updateUi = false;
 			score.text ="score:"+numToStr(global.score, 6);
 			money.text = "money:" + numToStr(global.money, 5);
 			lives.text= "lives:"+numToStr(global.lives, 2);

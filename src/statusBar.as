@@ -15,7 +15,7 @@ package
 			
 			maxLife = life;
 			Width = wdth + (life / 100);
-			trace("widht:", Width);
+			//trace("widht:", Width);
 			//sprite.x = 5-(Width/2);
 			sprite.y = -10;
 			addChild(sprite); 

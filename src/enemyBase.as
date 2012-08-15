@@ -33,7 +33,6 @@ package
 			spawnTimer.start();
 			spawnTimer.addEventListener(TimerEvent.TIMER, spawn);
 			
-			
 		}
 		
 		private function spawn(e:TimerEvent):void {
@@ -69,6 +68,7 @@ package
 		private function waveTick(e:TimerEvent):void {
 			//trace(global.levelTime.currentCount);
 			global.time--; 
+			global.uiMenu.updateUi=true;
 		}
 		
 		private function waveStart(e:TimerEvent):void {

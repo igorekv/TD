@@ -29,17 +29,18 @@ package
 		private var sectorSlot:int = 0;
 		
 		
-		public function soldier(x:int,y:int) 
+		public function soldier(x:int, y:int, _targetX:int = 0,_targetY:int=0 ) 
 		{
 			
 			life = 1000;
 			damage = 10;
 			speed = 3;
-			rateofFire = 100;
+			rateofFire = 5;
 			
 			this.x=curX = targetX = x; this.y=curY = targetY = y;
-			
-			mainTimer = new Timer(25);
+			if(_targetX!=0 && targetY!=0){targetX = _targetX;
+			targetY = _targetY;}
+			mainTimer = new Timer(10);
 			mainTimer.start();
 			mainTimer.addEventListener(TimerEvent.TIMER, draw);
 			
@@ -63,6 +64,8 @@ package
 			
 			}
 		public function draw(e:Event):void {//при выводе на экран
+			oldX = this.x;
+			oldY = this.y;
 			intTimer++;
 			if (intTimer == 3 || intTimer == 6 || intTimer==9  ) { global.cleanGarbage(); }
 			

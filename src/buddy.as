@@ -17,6 +17,8 @@ package
 		internal var targetEnemy:buddy;//ссылка на цель
 		internal var targetEnemyX:int=0;//координаты цели
 		internal var targetEnemyY:int = 0;
+		public var oldX:int = 0;
+		public var oldY:int = 0;
 		//изменяемые параметры
 		public var life:int = 100;
 		internal var rangeofFire:int = 100;//levelup?
@@ -53,19 +55,29 @@ package
 			//если цель в не зоны огня
 			//if (global.tmp) { trace('после удаления',targetEnemy.toDelete); }
 			
-			if (targetEnemy != null) { if (destCalc(Math.abs(targetEnemy.x - this.x), Math.abs(targetEnemy.y - this.y)) > rangeofFire || targetEnemy.toDelete) { targetEnemy = null; }; }
+			if (targetEnemy != null) { if (global.destCalc(targetEnemy.x,targetEnemy.y ,this.x, this.y,1) > rangeofFire+10 || targetEnemy.toDelete) {
+				if (enemyList == global.myArmy) { trace("сброс цели");}
+				targetEnemy = null; }; }
 			//выбираем цель если она не выбрана
 			if (targetEnemy == null) { 
 			
 				
-			var dest:Number = 0; var minDest:Number = rangeofFire;	
+			var dest:Number = 0; var minDest:Number = rangeofFire+(rangeofFire/10);	
 			for (var i:int= 0; i < enemyList.length; i++)
 				{
-					dest = destCalc(Math.abs(enemyList[i].x - this.x), Math.abs(enemyList[i].y - this.y));
 					
-					if (dest <rangeofFire && dest<minDest)
+					var dstx:int = Math.abs(enemyList[i].x - this.x);
+					var dsty:int = Math.abs(enemyList[i].y - this.y);
+					if (dstx > dsty) { dest = 1.4 * dsty + (dstx - dsty);}else{dest = 1.4 * dstx + (dsty - dstx);}
+					
+					//dest = destCalc(dstx,dsty );
+					
+					if (dest <rangeofFire+(rangeofFire/10) && dest<minDest)
 					{
-						if(!enemyList[i].toDelete){minDest = dest; targetEnemy = enemyList[i];}
+						
+						if (!enemyList[i].toDelete) {
+	
+							minDest = dest; targetEnemy = enemyList[i];}
 						/**/
 						
 						
@@ -77,13 +89,21 @@ package
 				if (targetEnemy != null) {  targetEnemyX = targetEnemy.x; targetEnemyY = targetEnemy.y; }
 			}
 			
-			if (targetEnemy != null ) {//если есть цель то можно стрелять
+			
+			if (targetEnemy != null) {
+				
+				var dstx:int = Math.abs(targetEnemy.x - this.x);
+				var dsty:int = Math.abs(targetEnemy.y - this.y);
+				if(destCalc(dstx,dsty )<rangeofFire){ //если есть цель то можно стрелять
 				
 				//if (targetEnemyX != targetEnemy.x) { 
 				
-				var dX:int = (targetEnemyX - targetEnemy.x);
-				var dY:int = (targetEnemyY - targetEnemy.y);
-				var dst:int = destCalc(this.x - targetEnemy.x, this.y - targetEnemy.y)/19;// 20 - скорости пули на скорость движения / скорости стрельбы
+				//var dX:int = (targetEnemyX - targetEnemy.x);
+				//var dY:int = (targetEnemyY - targetEnemy.y);
+				var dX:int = (targetEnemy.oldX - targetEnemy.x);
+				var dY:int = (targetEnemy.oldY - targetEnemy.y);
+				
+				var dst:int = destCalc(this.x - targetEnemy.x, this.y - targetEnemy.y)/5;// 20 - скорости пули на скорость движения / скорости стрельбы
 				targetEnemyX = targetEnemy.x;
 				targetEnemyY = targetEnemy.y;
 					var ang:int = getAngle(this.x-targetEnemy.x+(dX*dst), this.y-targetEnemy.y+(dY*dst));
@@ -99,7 +119,9 @@ package
 						global.stat_bulletCount++;
 						//if(global.foeArmy == enemyList){trace('цель',targetEnemy)}
 				//}
-				
+			}
+			//else{targetEnemyX = targetEnemy.x;
+			//targetEnemyY = targetEnemy.y;}
 				}//конец стрельбы
 			}
 			fireTimer--;

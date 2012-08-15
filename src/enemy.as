@@ -28,7 +28,7 @@ package
 		public function enemy(_x:int, _y:int,_level:int)
 		{
 			this.x = _x;
-			this.y = _y;
+			this.y = _y*global.TILE_HEIGHT;
 			life = global.skill[_level].life;
 			damage = global.skill[_level].damage;
 			speed = global.skill[_level].speed;
@@ -45,7 +45,7 @@ package
 			addChild(sprite);
 			//addEventListener(Event.ENTER_FRAME, draw);
 			
-			mainTimer = new Timer(25);
+			mainTimer = new Timer(10);
 			mainTimer.start();
 			
 			mainTimer.addEventListener(TimerEvent.TIMER, draw);
@@ -56,7 +56,11 @@ package
 			
 		
 		}
-		
+		public function distToFinish():int {
+			//trace(this.x, path[path.length - 1].mapX);
+			return global.destCalc(this.x,this.y,path[path.length-1].mapX,path[path.length-1].mapY,1);
+			
+		}
 		
 		public function hit(dmg:int):void
 		{
@@ -76,6 +80,7 @@ package
 			//parent.removeChild(this);
 			global.score += 10;
 			global.money += 5;
+			global.uiMenu.updateUi = true;
 			statBar.show("$"+5);
 			this.toDelete = true;
 		}
@@ -87,15 +92,17 @@ package
 		public function findNewPath() {
 			var tx:int = global.LEVEL_TARGET_X; var ty:int = global.LEVEL_TARGET_Y;
 			if (global.ownBase && global.ownBase.builded) { global.ownBase.getPosition(); tx = global.ownBase.target_x; ty = global.ownBase.target_y; }
-			
+			//trace("new path");
 			path = global.findPath(global.nodes[int(x/global.TILE_WIDTH)][int(y/global.TILE_HEIGHT)], global.nodes[tx][ty]);
-			
+			checkpoint = 0;
+					
 		}
 		
 		
 		private function draw(e:TimerEvent):void
 		{
-			
+			oldX = this.x;
+			oldY = this.y;
 			
 			intTimer++;
 			if (intTimer == 3 || intTimer == 6 || intTimer == 9  ) { global.cleanGarbage(); }
@@ -117,8 +124,8 @@ package
 			{//если растояние до чекпойнта  больше 1 то двигаться
 				
 				var len:Number = destCalc(Math.abs(curX - path[checkpoint].mapX), Math.abs(curY - path[checkpoint].mapY));
-				curX += (path[checkpoint].mapX - curX) / (len / (speed/2));
-				curY += (path[checkpoint].mapY - curY) / (len / (speed/2));
+				curX += (path[checkpoint].mapX - curX) / (len / (speed/3));
+				curY += (path[checkpoint].mapY - curY) / (len / (speed/3));
 				
 			}
 			this.x = curX;
