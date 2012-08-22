@@ -55,6 +55,38 @@ package
 			}
 			addChild(uiMenu);
 			this.name = "userInterface";
+			
+			drawGrid();
+			
+		}
+		
+		private function drawGrid():void {
+			for (var i:int = 0; i <10 ; i++) 
+			{
+				for (var j:int = 0; j <5 ; j++) 
+				{
+					var sprite:Sprite = new Sprite();	
+				//sprite.graphics.beginFill(0x00FF00, 0.2);
+				
+				sprite.graphics.lineStyle(1, 0xFFFFFF, 0.2);
+				//sprite.graphics.drawCircle(0, 0, 32);
+				sprite.graphics.moveTo(32, 0);
+				sprite.graphics.lineTo(32, 16);
+				sprite.graphics.lineTo(0, 32);
+				sprite.graphics.lineTo( -32, 16);
+				sprite.graphics.lineTo(-32,-16);
+				sprite.graphics.lineTo(0, -32);
+				sprite.graphics.lineTo(32, -16);
+				//sprite.graphics.drawRect(0, 0, global.SECTOR_WIDTH , global.SECTOR_HEIGHT);
+				//sprite.graphics.endFill();
+				
+				sprite.x =32+i*64+64/2*(j%2)
+				sprite.y =32+ j*48;
+				layer3.addChild(sprite);
+					
+					
+				}
+			}
 		}
 		
 		private function numToStr(value:int, len:int):String {
@@ -64,7 +96,7 @@ package
 		}
 		
 		public function update():void {
-			trace("interface update");
+			//trace("interface update");
 			for (var i:int = 0; i <buttons.length ; i++) 
 			{
 				buttons[i].update();

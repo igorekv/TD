@@ -205,6 +205,26 @@ package
 				return false
 				}
 		}
+		
+		public static function getSector(_x, _y):node {
+			
+		var it:int = _y / 48;
+		var jt:int = (_x - (it % 2 * 32)) / 64;
+		var xt:int = (_x - (it % 2 * 32))-jt*64;
+		var yt:int = _y - it * 48;
+		var i:int = 0;
+		var j:int = 0;
+		if (yt < 16) {
+		trace("drw");
+		if (yt < (32 - xt) / 2 && xt < 32) { it--; if (it % 2) { jt-- };  };
+		if (yt < (xt-32)/2 && xt > 32) { it--; if (!(it % 2)) {jt++}; };
+			}
+		trace(jt, it);
+		//trace(xt, yt);
+		return sectors[jt][it];
+			
+			
+		}
 		public static function findPath(start:node, dest:node):Array
 		{
 			var _start:node = start.copy();

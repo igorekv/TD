@@ -129,7 +129,7 @@ package
 		}
 		
 		private function getPosition():void {
-		currentSector=global.sectors[int(this.x / global.SECTOR_WIDTH)][int(this.y / global.SECTOR_HEIGHT)]
+		currentSector = global.getSector(this.x,this.y);//int(this.x / global.SECTOR_WIDTH)][int(this.y / global.SECTOR_HEIGHT)]
 		var coord:Vector.<int> = currentSector.getPosition();
 		if(coord.length!=0){
 		targetX = coord[0];

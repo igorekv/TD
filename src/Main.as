@@ -266,6 +266,8 @@ package
 				if (oldGameMode == global.MODE_BUILD) {
 					stage.removeEventListener(MouseEvent.MOUSE_MOVE, buildMouseMove);
 					stage.removeEventListener(MouseEvent.CLICK, buildClick);
+					trace(global.ownBase);
+					if(global.ownBase!=null){if(!global.ownBase.builded){global.ownBase = null;}}
 					}
 				if (cur == global.MODE_OVER) {
 					trace('gameover');
@@ -275,7 +277,7 @@ package
 			
 			private function buildMouseMove(e:MouseEvent):void {
 				var tmpy:int=int(mouseY / (global.TILE_HEIGHT*3)) * (global.TILE_HEIGHT*3);
-				var tmpx:int=int(mouseX/global.SECTOR_WIDTH)*global.SECTOR_WIDTH;
+				var tmpx:int=int((mouseX-32*((tmpy/global.TILE_HEIGHT*3)%2))/global.SECTOR_WIDTH)*global.SECTOR_WIDTH;
 				if (((int(mouseY / (global.TILE_HEIGHT * 3))) & 1) != 0) { tmpx += 32; }
 				global.ownBase.x = tmpx;
 				global.ownBase.y  = tmpy;
@@ -307,7 +309,12 @@ package
 			
 			}
 			if (global.gameMode() == global.MODE_BUILD) { 
-				if (gest.check(gest.CANCEL)) {global.changeGameMode(global.MODE_GAME)}
+				if (gest.check(gest.CANCEL)) { 
+					global.uiMenu.layer1.removeChild(global.ownBase); 
+					
+					global.changeGameMode(global.MODE_GAME) 
+					
+					}
 				
 				
 			}
@@ -365,7 +372,11 @@ package
 		
 		private function click(e:MouseEvent):void
 		{
-		if(e.stageY>global.TOPMENU_HEIGHT && e.stageY<global.TOPMENU_HEIGHT+global.MAP_HEIGHT){
+		//trace("click", mouseX, mouseY);
+		
+		
+		
+			if(e.stageY>global.TOPMENU_HEIGHT && e.stageY<global.TOPMENU_HEIGHT+global.MAP_HEIGHT){
 			if (!global.startSelect)
 			{
 				

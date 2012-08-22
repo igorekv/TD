@@ -38,8 +38,9 @@ package
 		private function updateSectors():void {
 			for (var _x:int = 0; _x < global.levelBitmap.width/global.NODES_PER_SECTOR; _x++ ) {
 				global.sectors[_x] = new Vector.<node>();
-					for (var _y:int = 0; _y < global.levelBitmap.height/global.NODES_PER_SECTOR; _y++ ) {
+					for (var _y:int = 0; _y < global.levelBitmap.height/(global.NODES_PER_SECTOR-1); _y++ ) {
 						global.sectors[_x][_y] = new node(_x, _y);
+						
 						}
 			}
 		}

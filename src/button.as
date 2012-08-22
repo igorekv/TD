@@ -54,10 +54,11 @@ package {
 			if (state == 1) { state = 0; }
 			var tmp:int = 0;
 			if (global.money <= execCost) { tmp++; }
+			//if (type == BUILD && global.ownBase != null && global.ownBase.builded) { state = 1;}
 			if (type == SOLDIER ) {
 				if(global.ownBase==null || !global.ownBase.builded){
 								
-				tmp++; trace('nobase' ); 
+				tmp++; trace('nobase',global.ownBase); 
 				}
 				}
 				
@@ -76,7 +77,7 @@ package {
 			//trace('click');
 			global.cleanSelection();
 			if(global.money>=execCost){
-			if (type == BUILD){
+			if (type == BUILD && state==2){
 				
 				if (global.gameMode() != global.MODE_BUILD) {
 					global.ownBase = new myBase();
@@ -90,7 +91,7 @@ package {
 				}
 			}//build
 			
-			if (type == SOLDIER){
+			if (type == SOLDIER && state == 2 ) {
 			global.money -= execCost;
 			global.ownBase.getPosition();
 			//trace("position", global.ownBase.target_x, global.ownBase.target_y);
