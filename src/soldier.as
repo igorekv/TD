@@ -5,17 +5,20 @@ package
 	import flash.events.MouseEvent;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
-	
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	/**
 	 * ...
 	 * @author igorek
 	 */
 	public class soldier extends buddy
 	{
-		private var state:int;//состояние
+		
 
 		
-		public var select:Boolean = false;//флаг выбран/невыбран
+		
 	private var deadCount:int = 5;
 		private var curX:Number;//текущая точка
 		private var curY:Number;
@@ -29,27 +32,46 @@ package
 		private var sectorSlot:int = 0;
 		
 		
+		
 		public function soldier(x:int, y:int, _targetX:int = 0,_targetY:int=0 ) 
 		{
-			
+			animationSpeed = 100;//милисекунд между кадрами
 			life = 1000;
 			damage = 10;
 			speed = 3;
 			rateofFire = 5;
+			tileHeight = 22;
+			
+			
+			displayBitmapData = new BitmapData(tileWidth, tileHeight, true, 0xffffff);
+			displayBitmap = new Bitmap(displayBitmapData); 
+			blitRect = new Rectangle(0, 0, tileWidth, tileHeight);
 			
 			this.x=curX = targetX = x; this.y=curY = targetY = y;
-			if(_targetX!=0 && targetY!=0){targetX = _targetX;
+			if (_targetX != 0 && targetY != 0) { targetX = _targetX; 
 			targetY = _targetY;}
+			//таймер расчета
 			mainTimer = new Timer(10);
 			mainTimer.start();
 			mainTimer.addEventListener(TimerEvent.TIMER, draw);
 			
+			//таймер анимации
+			animationTimer = new Timer(animationSpeed);
+			animationTimer.start();
+			animationTimer.addEventListener(TimerEvent.TIMER, animateSprite);
+			
+			
 			//this.addEventListener(Event.ENTER_FRAME, draw)	;
-			sprite.graphics.beginFill(0x33cc33);
-			sprite.graphics.drawRect(0, 0, global.TILE_WIDTH, global.TILE_HEIGHT);
-			sprite.graphics.endFill();
+			
+			//sprite.graphics.beginFill(0x33cc33);
+			//sprite.graphics.drawRect(0, 0, global.TILE_WIDTH, global.TILE_HEIGHT);
+			//sprite.graphics.endFill();
+			sprite.visible = true;
 			//sprite.x = -5; sprite.y = -5;
+			
+			texture = global.soldierBitmap;
 			addChild(sprite);
+			addChild(displayBitmap);
 			addEventListener(MouseEvent.CLICK, onclick);
 			addEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
 			
@@ -80,14 +102,21 @@ package
 				deadCount--;
 				
 			}else{
+			
 			sprite.graphics.clear();
-		if (select) { sprite.graphics.lineStyle(2, 0xFF0033); }
-			sprite.graphics.beginFill(0x33cc33);
-			sprite.graphics.drawRect(0, 0, global.TILE_WIDTH, global.TILE_HEIGHT);
-			sprite.graphics.endFill();
+		if (select) { 
+			sprite.graphics.lineStyle(4, 0xFFFF00,0.3); sprite.graphics.drawEllipse(0, global.TILE_HEIGHT, global.TILE_WIDTH + 4, global.TILE_HEIGHT / 2);
+			sprite.graphics.lineStyle(0.5, 0xFFFF00); sprite.graphics.drawEllipse(0, global.TILE_HEIGHT, global.TILE_WIDTH + 4, global.TILE_HEIGHT / 2);
+			
+		
+		
+			}
+			//sprite.graphics.beginFill(0x33cc33);
+			
+			//sprite.graphics.endFill();
 			
 			if(Math.abs(int(curX)-targetX)>1 || Math.abs(int(curY)-targetY)>1)  {//если до цели еще далеко
-			if (walkState == 0) {  walkState = 1; if (currentSector) { currentSector.leave(sectorSlot); } }
+			if (walkState == 0) {  walkState = 1; }//if (currentSector) { currentSector.leave(sectorSlot); } }
 			var len:Number = destCalc(Math.abs(curX - targetX), Math.abs(curY - targetY));
 			if (len > 0) {
 			curX +=(targetX - curX) / len;
@@ -96,10 +125,11 @@ package
 			}
 			else 
 			{//если пришли до цели
-				if (walkState == 1) {  getPosition(); walkState = 3; this.select = false; } else { walkState = 0;  } 
+				if (walkState == 1) { this.select = false;walkState = 0;  } 
 			}
 			
-			this.x = curX; this.y = curY;
+			this.x = curX;
+			this.y = curY;
 			checkFire(global.foeArmy);
 			}
 			if (intTimer >= 10) { intTimer = 0;}
@@ -129,7 +159,8 @@ package
 		}
 		
 		private function getPosition():void {
-		currentSector = global.getSector(this.x,this.y);//int(this.x / global.SECTOR_WIDTH)][int(this.y / global.SECTOR_HEIGHT)]
+		trace('getposition надо удалить');
+			currentSector = global.getSector(this.x,this.y);//int(this.x / global.SECTOR_WIDTH)][int(this.y / global.SECTOR_HEIGHT)]
 		var coord:Vector.<int> = currentSector.getPosition();
 		if(coord.length!=0){
 		targetX = coord[0];
@@ -155,9 +186,18 @@ package
 			}
 		}
 		
-		public function setTarget(x:int, y:int):void {
+		public function setTarget(_x:int, _y:int):Boolean {
 			
-			targetX = x; targetY = y;
+			//targetX = x; targetY = y;
+			if (currentSector != null) {  currentSector.leave(sectorSlot); }
+		currentSector = global.getSector(_x,_y);//int(this.x / global.SECTOR_WIDTH)][int(this.y / global.SECTOR_HEIGHT)]
+		var coord:Vector.<int> = currentSector.getPosition();
+		if(coord.length!=0){
+		targetX = coord[0];
+		targetY = coord[1];
+		sectorSlot = coord[2];
+		return true;
+		}else { currentSector = null; return false; }
 			
 			
 		}

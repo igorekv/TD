@@ -109,6 +109,10 @@ package
 				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 				//parent.removeChild(this);
 				
+				var fx:sfx = new sfx(sfx.BLOOD);
+				fx.rotation = bulletAngle-180;
+				fx.x = this.x; fx.y = this.y;
+				global.uiMenu.layer1.addChild(fx);
 				this.toRemove = true;
 				enemyList[i].hit(damage);
 				break;

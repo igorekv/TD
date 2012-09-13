@@ -46,11 +46,14 @@ package
 		{
 			
 			global.loadBitmap("bullet.png", global.bulletBitmap);
+			global.loadBitmap("sfx1.png", global.sfx1Bitmap);
 			global.loadBitmap("terrain2.png", global.terrainBitmap);
-			global.loadBitmap("level4.png", global.levelBitmap);
+			global.loadBitmap("level1.png", global.levelBitmap);
 			global.loadBitmap("buttons.png", global.buttonBitmap);
+			global.loadBitmap("people.png", global.soldierBitmap);
 			global.loadText('level1.txt', global.levelInfo);
 			global.loadText('mobConfig.txt', global.mobConfig);
+			
 			
 			if (stage)
 				init();
@@ -146,11 +149,13 @@ package
 			mapLevel = new map(1);
 			//mapLevel.scaleX = mapLevel.scaleY=0.5;
 			mapLevel.y = global.TOPMENU_HEIGHT;
-			//global.uiMenu.layer1.addChild(mapLevel);
+			//global.uiMenu.layer1.addChild(mapLevel); //рисовать карту
 			//юзеринтерфейс
 			addChild(global.uiMenu);
 			global.uiMenu.update();
 			global.levelTime.start();
+			
+			
 			
 			//солдатики---------------
 			
@@ -266,7 +271,7 @@ package
 				if (oldGameMode == global.MODE_BUILD) {
 					stage.removeEventListener(MouseEvent.MOUSE_MOVE, buildMouseMove);
 					stage.removeEventListener(MouseEvent.CLICK, buildClick);
-					trace(global.ownBase);
+					//trace(global.ownBase);
 					if(global.ownBase!=null){if(!global.ownBase.builded){global.ownBase = null;}}
 					}
 				if (cur == global.MODE_OVER) {
@@ -287,8 +292,9 @@ package
 			
 			private function buildClick(e:MouseEvent):void {
 				if (e.stageY > global.TOPMENU_HEIGHT && e.stageY < global.TOPMENU_HEIGHT + global.MAP_HEIGHT) {
+					if(global.getSector(e.stageX, e.stageY).isFree()){
 					global.changeGameMode(global.MODE_GAME);
-					global.ownBase.build();
+					global.ownBase.build(); } else { global.ownBase.flash(); }
 				}
 			}
 			

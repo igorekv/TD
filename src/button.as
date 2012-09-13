@@ -1,5 +1,6 @@
 package {
 	import flash.display.Sprite;
+	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
@@ -16,13 +17,17 @@ package {
 		private var displayBitmap:Bitmap = new Bitmap(displayBitmapData); //картинка спрайта на экране
 		private var BlitPoint:Point = new Point(0, 0); //точка начала копирования пикселей
 		private var blitRect:Rectangle = new Rectangle(0, 0, tileWidth, tileHeight); //прямоугольник область копирования пикселей
-		
+		private const ACTIVE:int = 0;
+		private const PASSIVE:int = 1;
+		private const ROLLOVER:int = 2;
 		private var sprite:Sprite = new Sprite();
 		public static const BUILD:int = 0;
 		public static const SOLDIER:int = 1;
 		private var type:int;
 		private var state:int=0;
 		private var execCost:int;
+		private var defaultPos:int = global.TOPMENU_HEIGHT + global.MAP_HEIGHT;
+		private var buttonSize:int = 32;
 		//state active passive roll down
 		public function button(_type:int,_cost:int=0){
 			type = _type;
@@ -40,25 +45,36 @@ package {
 			}
 		
 		private function rollover(e:MouseEvent):void {
-			if (state != 2) { state = 2; update();}
+			if (state != PASSIVE) { 
+				state = ROLLOVER; update();
+				addEventListener(Event.ENTER_FRAME, displayButton);
+				
+				}
 			//trace("rolover");
 		}
-		
+		internal function displayButton(e:Event):void {
+			if (state == ROLLOVER && this.y>defaultPos-buttonSize) { this.y-=3;}
+			if (state != ROLLOVER) { this.y++;
+			if (this.y > defaultPos) { this.y = defaultPos;
+				removeEventListener(Event.ENTER_FRAME, displayButton);
+				}
+			}
+		}
 		private function rollout(e:MouseEvent):void {
 			//trace("rolover");
-			if (state != 0) { state = 0; update();}
+			if (state != ACTIVE) { state = 0; update();}
 		}
 		
 		public function update() {
 			//if(state==0){
-			if (state == 1) { state = 0; }
+			if (state == PASSIVE) { state = ACTIVE; }
 			var tmp:int = 0;
 			if (global.money <= execCost) { tmp++; }
-			//if (type == BUILD && global.ownBase != null && global.ownBase.builded) { state = 1;}
+			if (type == BUILD && global.ownBase != null && global.ownBase.builded) { state = 1;}
 			if (type == SOLDIER ) {
 				if(global.ownBase==null || !global.ownBase.builded){
 								
-				tmp++; trace('nobase',global.ownBase); 
+				tmp++; //trace('nobase',global.ownBase); 
 				}
 				}
 				
@@ -77,7 +93,7 @@ package {
 			//trace('click');
 			global.cleanSelection();
 			if(global.money>=execCost){
-			if (type == BUILD && state==2){
+			if (type == BUILD && state==2){//нажатие на кнопку  строить базу
 				
 				if (global.gameMode() != global.MODE_BUILD) {
 					global.ownBase = new myBase();
@@ -92,12 +108,16 @@ package {
 			}//build
 			
 			if (type == SOLDIER && state == 2 ) {
-			global.money -= execCost;
-			global.ownBase.getPosition();
+			
+			//global.ownBase.getPosition();
 			//trace("position", global.ownBase.target_x, global.ownBase.target_y);
-			var mariner = new soldier(global.ownBase.x+global.TILE_WIDTH+8, global.ownBase.y+global.TILE_HEIGHT*3,global.ownBase.x+10,global.ownBase.y+10);
+			var mariner = new soldier(global.ownBase.x, global.ownBase.y + global.TILE_HEIGHT * 1.5);// , global.ownBase.x + 10, global.ownBase.y + 10);
+			if(mariner.setTarget(global.ownBase.x - 32, global.ownBase.y + global.TILE_HEIGHT * 1.5)){
+			
 			global.myArmy.push(mariner);
 			global.uiMenu.layer1.addChild(mariner);
+			global.money -= execCost;
+			}else { mariner = null;}
 			}//build
 			
 			

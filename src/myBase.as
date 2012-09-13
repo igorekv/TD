@@ -1,40 +1,44 @@
 package  
 {
 	import flash.display.Sprite;
+	import flash.events.Event;
 	/**
 	 * ...
 	 * @author igorek
 	 */
-	public class myBase extends Sprite
+	public class myBase extends basicObject
 	{
-		private var sprite:Sprite;
+		
 		public var builded:Boolean = false;
 		public var target_x:int;
 		public var target_y:int;
 		public var health:int = 100;
+		private var flashCount = 16;
+		private var color = 0x00FF00;
+		
 		//private var cnter:int = 0;
 		public function myBase() 
 		{
 			sprite = new Sprite();	
-			sprite.graphics.beginFill(0x00FF00, 0.2);
-				sprite.graphics.moveTo(32, 0);
-				sprite.graphics.lineTo(32, 16);
-				sprite.graphics.lineTo(0, 32);
-				sprite.graphics.lineTo( -32, 16);
-				sprite.graphics.lineTo(-32,-16);
-				sprite.graphics.lineTo(0, -32);
-				sprite.graphics.lineTo(32, -16);
-				//sprite.graphics.drawRect(0, 0, global.SECTOR_WIDTH , global.SECTOR_HEIGHT);
-				sprite.graphics.endFill();
+			draw();
 				sprite.x = sprite.y = 32;
 				addChild(sprite);
+				life = 200;
 		}
 		
-		public function build():void {
+		public function build():void {//строит базу на карте, срабатывает по клику
+			
+			global.getSector(this.x+global.HALF_SECTOR, this.y+global.HALF_SECTOR).deploy()
+			
 			builded = true;
 			changeNodes(true);
+			
 			getPosition();
+			oldX = this.x;
+			oldY = this.y;
+			
 			global.money -= 100;
+			global.myArmy.push(this);//список всех наших юнитов и построек
 			// после постройки враги бросаются на базу
 			for (var i:int  = 0; i < global.foeArmy.length; i++) {
 			var toFinish:int=global.foeArmy[i].distToFinish();//до финиша
@@ -46,8 +50,61 @@ package
 			//target_y = int((this.y +(this.height / 2)) / global.TILE_HEIGHT);
 			
 		}
+		public function flash():void {//запускает мигание красным если базу нельзя поставить
+			addEventListener(Event.ENTER_FRAME, changeColor);
+			}
 		
-		private function changeNodes(setup:Boolean):void {
+			private function changeColor(e:Event):void {//мигание цвета когда нельзя строить фция на каждый кадр
+			flashCount--;
+			if(flashCount==0 || flashCount==5 || flashCount==10 || flashCount==15) {
+			if(color==0x00FF00){color=0xFF0000}else{color=0x00FF00}
+			
+			draw(color); 
+			}
+			if (flashCount < 0) { flashCount = 16;removeEventListener(Event.ENTER_FRAME, changeColor);}
+				
+			}
+			
+			private function draw(color:int=0x00FF00):void {//рисует базу
+				sprite.graphics.clear();
+				sprite.graphics.beginFill(color, 0.2);
+				sprite.graphics.moveTo(32, 0);
+				sprite.graphics.lineTo(32, 16);
+				sprite.graphics.lineTo(0, 32);
+				sprite.graphics.lineTo( -32, 16);
+				sprite.graphics.lineTo(-32,-16);
+				sprite.graphics.lineTo(0, -32);
+				sprite.graphics.lineTo(32, -16);
+				//sprite.graphics.drawRect(0, 0, global.SECTOR_WIDTH , global.SECTOR_HEIGHT);
+				sprite.graphics.endFill();
+			}
+			
+			
+		private function dead():void {//действия после того как базу уничтожат
+			this.toDelete = true;
+			this.toRemove = true;
+			builded = false;
+			changeNodes(false);
+			for (var i:int  = 0; i < global.foeArmy.length; i++) {
+			global.foeArmy[i].findNewPath();
+			}
+		}
+		
+		public function hit(dmg:int):void//действие на столкновение с пулей
+		{
+			life -= dmg;
+			//statBar.draw(life);
+			//global.stat_bullHitCount++;
+			//global.stat_dmgCount += dmg;
+			trace(life);
+			if (life < 0 && !this.toDelete)
+			{
+				dead();
+			}
+		}
+		
+		private function changeNodes(setup:Boolean):void {// изменяет карту так чтобы проложить путь сквозь базу было дорого
+			
 			for (var i:int = 0; i < global.NODES_PER_SECTOR; i++) {
 				for (var j:int = 0; j < global.NODES_PER_SECTOR; j++) {
 				//trace(i + x / global.TILE_WIDTH, j + y / global.TILE_HEIGHT);
@@ -58,7 +115,7 @@ package
 			
 		}
 		
-		public function getPosition():void {
+		public function getPosition():void {//возвращает координаты вокруг базы для врагов
 			
 			//cnter++;
 			//trace((target_x < 0 || target_x > global.LEVEL_WIDTH) && (target_y < 0 && target_y > global.LEVEL_HEIGHT));

@@ -51,7 +51,7 @@ package
 			for (var _x:int = 0; _x < global.levelBitmap.width; _x++ ) {
 			
 				global.nodes[_x] = new Vector.<node>();
-					for (var _y:int = 0; _y < global.levelBitmap.height; _y++ ) {
+					for (var _y:int = 0; _y <= global.levelBitmap.height; _y++ ) {
 					//drawSprite(loadedData.charCodeAt(_y*10+_x)-48, _x, _y);
 					
 					
@@ -68,7 +68,7 @@ package
 					}
 					//trace(global.nodes[_y]);
 			}
-			trace(global.nodes.length, global.nodes[0].length);
+			//trace(global.nodes.length, global.nodes[0].length);
 			global.LEVEL_WIDTH = global.nodes.length;
 			global.LEVEL_HEIGHT = global.nodes[0].length;
 			}

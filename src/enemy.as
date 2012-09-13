@@ -5,7 +5,10 @@ package
 	import flash.events.Event;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
-
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	/**
 	 * ...
@@ -13,12 +16,10 @@ package
 	 */
 	public class enemy extends buddy
 	{
-		private var state:int;
-		private const STAY:int = 0;
-		private const WALK:int = 1;
-		private const FIRE:int = 2;
 		
-		public var select:Boolean = false;
+
+		
+		
 		private var checkpoint:int = 0;
 		private var curX:Number;
 		private var curY:Number;
@@ -27,28 +28,42 @@ package
 		private var deadCount:int = 5;
 		public function enemy(_x:int, _y:int,_level:int)
 		{
+			animationSpeed = 100;//милисекунд между кадрами
 			this.x = _x;
 			this.y = _y*global.TILE_HEIGHT;
 			life = global.skill[_level].life;
 			damage = global.skill[_level].damage;
 			speed = global.skill[_level].speed;
 			rateofFire = global.skill[_level].fireRate;
+			tileHeight = 22;
 			
 			findNewPath();
 			//trace("enemylife:",_health);
 			//path = global.findPath(global.nodes[0][4], global.nodes[3][6]);
 			this.x = curX  = path[0].mapX;
 			this.y = curY  = path[0].mapY;
+			
+			displayBitmapData = new BitmapData(tileWidth, tileHeight, true, 0xffffff);
+			displayBitmap = new Bitmap(displayBitmapData); 
+			blitRect = new Rectangle(0, 0, tileWidth, tileHeight);
+			
+			
 			sprite.graphics.beginFill(0xCC3333,0.1);	
-		sprite.graphics.drawRect(0, 0, 16, 16);
+			sprite.graphics.drawRect(0, 0, 16, 16);
 			sprite.graphics.endFill();
 			addChild(sprite);
+			addChild(displayBitmap);
 			//addEventListener(Event.ENTER_FRAME, draw);
 			
 			mainTimer = new Timer(10);
 			mainTimer.start();
 			
 			mainTimer.addEventListener(TimerEvent.TIMER, draw);
+			
+			animationTimer = new Timer(animationSpeed);
+			animationTimer.start();
+			animationTimer.addEventListener(TimerEvent.TIMER, animateSprite);
+			texture = global.soldierBitmap;
 			
 			statBar = new statusBar(life,100);
 			addChild(statBar);
@@ -129,7 +144,7 @@ package
 				
 			}
 			this.x = curX;
-			this.y = curY;
+			this.y = curY-step;
 			
 			if (Math.abs(int(curX) - path[checkpoint].mapX) <= 1 && Math.abs(int(curY) - path[checkpoint].mapY) <= 1)
 			{//если дошел до чекпойнта то следующий

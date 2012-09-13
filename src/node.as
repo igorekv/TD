@@ -1,5 +1,6 @@
 package
 {
+	import adobe.utils.ProductManager;
 	
 	/**
 	 * ...
@@ -37,7 +38,13 @@ package
 			return String(f);
 			//return String(k) ;
 		}
+
+		
+		public function deploy(type:Boolean=false):void {
+			if (type) { count = 0;}else{count=global.UNIT_PER_SECTOR}
+			}
 		public function leave(slot:int):void {
+			
 			count--;
 			stack[slot] = 0;
 		}
@@ -45,8 +52,14 @@ package
 			var cpy:node = new node(this.x, this.y, this.k);
 			return cpy;
 		}
+		public function isFree():Boolean {
+			if(count==0){return true}else{return false}
+			
+		}
+		
 		public function checkSpace():Boolean
 		{
+			
 			if (count < global.UNIT_PER_SECTOR)
 			{
 				return true;
@@ -58,30 +71,14 @@ package
 		
 		}
 		
-		private function calcPosition(){
-		/*
-		var it:int = mouseY / 48;
-		var jt:int = (this.x - (it % 2 * 32)) / 64;
-		var xt:int = (mouseX - (it % 2 * 32))-jt*64;
-		var yt:int = mouseY - it * 48;
-		var i:int = 0;
-		var j:int = 0;
-		if (yt < 16) {
-		trace("drw");
-		if (yt < (32 - xt) / 2 && xt < 32) { it--; if (it % 2) { jt-- };  };
-		if (yt < (xt-32)/2 && xt > 32) { it--; if (!(it % 2)) {jt++}; };
-			}
-		//trace(jt, it);
-		//trace(xt, yt);
-		sectorX = jt; 
-		sectorY = it;
-		*/
-		}
+		
 		 
 		public function getPosition():Vector.<int> {
 			//if (sectorX == null) { calcPosition();}
+			
 			if (checkSpace()) { count++; 
 			var slot:int = stack.indexOf(0); stack[slot] = 1;
+			
 			var angle:int = 360 / global.UNIT_PER_SECTOR * slot;
 			var coord:Vector.<int> = new Vector.<int>();
 			coord.push(-8+x*global.SECTOR_WIDTH+global.SECTOR_WIDTH/2+(global.SECTOR_WIDTH/2*(y%2))+(Math.cos((angle +90)* global.degree) * global.SECTOR_WIDTH*0.3));

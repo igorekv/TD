@@ -23,11 +23,13 @@ package
 		//библиотека картинок
 		public static const STAGE_WIDTH:int = 640;
 		public static const STAGE_HEIGHT:int = 500;
-		public static const MAP_WIDTH:int = 640;
-		public static const MAP_HEIGHT:int = 240;
-		public static const TOPMENU_HEIGHT:int = 20;
+		public static const TILE_HEIGHT:int = 16;
+		public static const TILE_WIDTH:int = 16;
 		public static var LEVEL_WIDTH:int = 31;
-		public static var LEVEL_HEIGHT:int = 15;
+		public static var LEVEL_HEIGHT:int = 27;
+		public static const MAP_WIDTH:int = LEVEL_WIDTH*TILE_WIDTH;
+		public static const MAP_HEIGHT:int = LEVEL_HEIGHT*TILE_HEIGHT;
+		public static const TOPMENU_HEIGHT:int = 20;
 		public static var LEVEL_TARGET_X:int;
 		public static var LEVEL_TARGET_Y:int;
 		public static const FIRE:int = 0;
@@ -36,12 +38,13 @@ package
 		public static var bulletBitmap:Bitmap = new Bitmap();//картинка пуль
 		public static var terrainBitmap:Bitmap = new Bitmap();//картинка карты
 		public static var levelBitmap:Bitmap = new Bitmap();//картинка уровня
-		public static var buttonBitmap:Bitmap = new Bitmap();//картинка уровня
+		public static var buttonBitmap:Bitmap = new Bitmap();//картинка кнопок
+		public static var sfx1Bitmap:Bitmap = new Bitmap();//картинка sfx1
+		public static var soldierBitmap:Bitmap = new Bitmap();//картинка слодата
 		public static var levelInfo:Object = new Object();
 		public static var mobConfig:Object = new Object();
 		public static var skill:Array=new Array();
-		public static const TILE_HEIGHT:int = 16;
-		public static const TILE_WIDTH:int = 16;
+		
 		public static const NODES_PER_SECTOR:int = 4;
 		public static const UNIT_PER_SECTOR:int = 6;
 		public static const radian:Number = 180 / Math.PI;
@@ -68,8 +71,10 @@ package
 		public static var time:int = 60;
 		public static var lives:int = 10;
 		public static var uiMenu:userInterface; 
-		public static var magazine:Vector.<bullet>=new Vector.<bullet>;;
+		public static var magazine:Vector.<bullet>=new Vector.<bullet>;
+		public static var sfxlist:Vector.<sfx>=new Vector.<sfx>;
 		public static const SECTOR_WIDTH:int = TILE_WIDTH * NODES_PER_SECTOR;
+		public static const HALF_SECTOR:int = (TILE_WIDTH * NODES_PER_SECTOR)/2;
 		public static const SECTOR_HEIGHT:int = TILE_HEIGHT * NODES_PER_SECTOR;
 		public static const MODE_GAME:String = 'mode_game';
 		public static const MODE_OVER:String = 'mode_over';
@@ -125,7 +130,7 @@ package
 		
 		public static function cleanGarbage():void
 		{
-			for (var i:int = 0; i < foeArmy.length; i++)
+			for (var i:int = 0; i < foeArmy.length; i++)//убираем трупы врагов
 			{
 				if (foeArmy[i].toRemove)
 				{
@@ -136,7 +141,7 @@ package
 					
 				}
 			}
-			for (var i:int = 0; i < myArmy.length; i++)
+			for (var i:int = 0; i < myArmy.length; i++)//убираем свои трупы
 			{
 				if (myArmy[i].toRemove)
 				{
@@ -147,12 +152,20 @@ package
 					
 				}
 			}
-			for (var i:int = 0; i < magazine.length;i++ ) {
+			for (var i:int = 0; i < magazine.length;i++ ) {//убираем пули
 				
 				//trace(">", i);
 				if (magazine[i].toRemove) { 					
 					uiMenu.layer1.removeChild(magazine[i]);
 					magazine.splice(i, 1);
+					}
+			}
+			for (var i:int = 0; i < sfxlist.length;i++ ) {//убираем эфекты
+				
+				//trace(">", i);
+				if (sfxlist[i].toRemove) { 					
+					uiMenu.layer1.removeChild(sfxlist[i]);
+					sfxlist.splice(i, 1);
 					}
 			}
 			
@@ -215,11 +228,11 @@ package
 		var i:int = 0;
 		var j:int = 0;
 		if (yt < 16) {
-		trace("drw");
+		//trace("drw");
 		if (yt < (32 - xt) / 2 && xt < 32) { it--; if (it % 2) { jt-- };  };
 		if (yt < (xt-32)/2 && xt > 32) { it--; if (!(it % 2)) {jt++}; };
 			}
-		trace(jt, it);
+		//trace(jt, it);
 		//trace(xt, yt);
 		return sectors[jt][it];
 			

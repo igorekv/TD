@@ -44,7 +44,9 @@ package
 			btn0 = new button(button.SOLDIER,20);
 			btn0.y = menuPos_y;btn0.x = 50;
 			buttons.push(btn0);
-			
+			btn0 = new button(button.SOLDIER,20);
+			btn0.y = menuPos_y;btn0.x = 100;
+			buttons.push(btn0);
 			layer2.addChild(score);
 			layer2.addChild(lives);
 			layer2.addChild(time);
@@ -56,19 +58,19 @@ package
 			addChild(uiMenu);
 			this.name = "userInterface";
 			
-			drawGrid();
+			//drawGrid();
 			
 		}
 		
 		private function drawGrid():void {
 			for (var i:int = 0; i <10 ; i++) 
 			{
-				for (var j:int = 0; j <5 ; j++) 
+				for (var j:int = 0; j <9 ; j++) 
 				{
 					var sprite:Sprite = new Sprite();	
 				//sprite.graphics.beginFill(0x00FF00, 0.2);
 				
-				sprite.graphics.lineStyle(1, 0xFFFFFF, 0.2);
+				sprite.graphics.lineStyle(1, 0xFFFFFF, 0.1);
 				//sprite.graphics.drawCircle(0, 0, 32);
 				sprite.graphics.moveTo(32, 0);
 				sprite.graphics.lineTo(32, 16);
@@ -80,8 +82,8 @@ package
 				//sprite.graphics.drawRect(0, 0, global.SECTOR_WIDTH , global.SECTOR_HEIGHT);
 				//sprite.graphics.endFill();
 				
-				sprite.x =32+i*64+64/2*(j%2)
-				sprite.y =32+ j*48;
+				sprite.x =global.HALF_SECTOR+i*global.SECTOR_WIDTH+global.HALF_SECTOR*(j%2)
+				sprite.y =global.HALF_SECTOR+ j*48;
 				layer3.addChild(sprite);
 					
 					
