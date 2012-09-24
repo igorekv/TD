@@ -5,6 +5,7 @@ package
 	import bullet;
 	import fire;
 	import flash.events.TimerEvent;
+	import flash.utils.Timer;
 	import flash.text.TextField;
 	import flash.text.TextFieldAutoSize;
     import flash.text.TextFormat;
@@ -20,16 +21,25 @@ package
 	
 	
 	
+	
+	
 	public class Main extends Sprite
 	{
 		[Embed (  source = "../lib/STENCIL.TTF", fontFamily = "stencil",  mimeType = 'application/x-font-truetype',embedAsCFF="false") ]private var CooperFont:Class;
+		[Embed(source = "../lib/bullet.png")]private var bulletPNG:Class;
+		[Embed(source = "../lib/sfx1.png")]private var sfx1PNG:Class;
+		[Embed(source = "../lib/terrain2.png")]private var terrainPNG:Class;
+		[Embed(source = "../lib/level1.png")]private var level1PNG:Class;
+		[Embed(source = "../lib/buttons.png")]private var buttonsPNG:Class;
+		[Embed(source = "../lib/people.png")]private var peoplePNG:Class;
+		
 		
 		private var loadingTxt:TextField = new TextField();
 		private var loadingTmp:int = 0;
 		private var frame:int = 0;
 		private var mapLevel:map;
 		private var mapEdit:mapEditor;
-		private const MOUSEDELAY:int = 10; //чувствительность мышки к кликам или выделению
+		private const MOUSEDELAY:int = 6; //чувствительность мышки к кликам или выделению
 		private var mouseDelay:int = MOUSEDELAY;
 		private var selection:selectTool;
 		private var mX:int;
@@ -40,19 +50,29 @@ package
 		private var menu:Sprite = new Sprite();//экран с меню
 		private var gest:gestures;
 		private var oldGameMode:String = "";
+		private var cleanGarbageTimer:Timer;
 		
 		
 		public function Main()
 		{
 			
-			global.loadBitmap("bullet.png", global.bulletBitmap);
-			global.loadBitmap("sfx1.png", global.sfx1Bitmap);
-			global.loadBitmap("terrain2.png", global.terrainBitmap);
-			global.loadBitmap("level1.png", global.levelBitmap);
-			global.loadBitmap("buttons.png", global.buttonBitmap);
-			global.loadBitmap("people.png", global.soldierBitmap);
-			global.loadText('level1.txt', global.levelInfo);
-			global.loadText('mobConfig.txt', global.mobConfig);
+			global.bulletBitmap = new bulletPNG();
+			global.sfx1Bitmap = new sfx1PNG();
+			global.terrainBitmap = new terrainPNG();
+			global.levelBitmap = new level1PNG();
+			global.buttonBitmap = new buttonsPNG();
+			global.soldierBitmap = new peoplePNG();
+			cleanGarbageTimer = new Timer(50);
+			cleanGarbageTimer.addEventListener(TimerEvent.TIMER, onTimerClean);
+			cleanGarbageTimer.start();
+			//global.loadBitmap("bullet.png", global.bulletBitmap);
+			//global.loadBitmap("sfx1.png", global.sfx1Bitmap);
+			//global.loadBitmap("terrain2.png", global.terrainBitmap);
+			//global.loadBitmap("level1.png", global.levelBitmap);
+			//global.loadBitmap("buttons.png", global.buttonBitmap);
+			//global.loadBitmap("people.png", global.soldierBitmap);
+			global.loadText();
+			
 			
 			
 			if (stage)
@@ -92,6 +112,10 @@ package
 				afterLoading();
 				
 			}
+			
+		}
+		private function onTimerClean(e:TimerEvent):void {
+			global.cleanGarbage();
 			
 		}
 		
@@ -148,22 +172,21 @@ package
 			prepareConfig();
 			mapLevel = new map(1);
 			//mapLevel.scaleX = mapLevel.scaleY=0.5;
-			mapLevel.y = global.TOPMENU_HEIGHT;
-			//global.uiMenu.layer1.addChild(mapLevel); //рисовать карту
+			//mapLevel.y = global.TOPMENU_HEIGHT;
+			global.uiMenu.layer1.addChild(mapLevel); //рисовать карту
 			//юзеринтерфейс
 			addChild(global.uiMenu);
 			global.uiMenu.update();
 			global.levelTime.start();
 			
 			
-			
 			//солдатики---------------
 			
 			global.foeBase = new enemyBase();
 			global.uiMenu.layer1.addChild(global.foeBase);	
+			//global.uiMenu.visible = false;
 			
-			
-			
+			/*
 			mariner = new soldier(150, 80);
 			global.myArmy.push(mariner);
 			global.uiMenu.layer1.addChild(mariner);
@@ -275,7 +298,7 @@ package
 					if(global.ownBase!=null){if(!global.ownBase.builded){global.ownBase = null;}}
 					}
 				if (cur == global.MODE_OVER) {
-					trace('gameover');
+					//trace('gameover');
 				}
 				
 			}
@@ -299,7 +322,7 @@ package
 			}
 			
 		private function onEnterFrame(e:Event):void	{
-			global.cleanGarbage();
+			//global.cleanGarbage();
 			if (global.lives == 0) {//gmover
 				changeGameMode(global.MODE_OVER);
 				showOver();

@@ -23,13 +23,15 @@ package
 		{
 		
 			//запускаем таймер первой волны  wave[0][0]
-			waveTimer = new Timer(1000, global.levelInfo.wave[0][0].startTimer/ms);// trace('start WaveTimer', global.levelInfo.wave[0][0].startTimer);
+			waveTimer = new Timer(1000, global.levelInfo.wave[0][0].startTimer/ms);
+			// trace('start WaveTimer', global.levelInfo.wave[0][0].startTimer);
 			global.time = global.levelInfo.wave[0][0].startTimer/ms;
 			waveTimer.start();
 			waveTimer.addEventListener(TimerEvent.TIMER, waveTick);
 			waveTimer.addEventListener(TimerEvent.TIMER_COMPLETE, waveStart);	
 			//запускаем таймер спавна wave[0][0]
-			spawnTimer = new Timer(global.levelInfo.wave[0][0].startTimer*tick, 1);//trace('start spawnTimer', global.levelInfo.wave[0][0].startTimer);
+			spawnTimer = new Timer(global.levelInfo.wave[0][0].startTimer*tick, 1);
+			//trace('start spawnTimer', global.levelInfo.wave[0][0].startTimer);
 			spawnTimer.start();
 			spawnTimer.addEventListener(TimerEvent.TIMER, spawn);
 			

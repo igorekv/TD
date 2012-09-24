@@ -74,7 +74,8 @@ package {
 			if (type == SOLDIER ) {
 				if(global.ownBase==null || !global.ownBase.builded){
 								
-				tmp++; //trace('nobase',global.ownBase); 
+				tmp++; 
+				//trace('nobase',global.ownBase); 
 				}
 				}
 				

@@ -24,10 +24,11 @@ package
 		private var curY:Number;
 		internal var targetX:int;//цель для движения
 		internal var targetY:int;
+		private var selectionRing:Sprite= new Sprite();
 		
 
 		
-		private var walkState:int = 0;
+		
 		private var currentSector:node;
 		private var sectorSlot:int = 0;
 		
@@ -35,12 +36,13 @@ package
 		
 		public function soldier(x:int, y:int, _targetX:int = 0,_targetY:int=0 ) 
 		{
+			angle = 180;
 			animationSpeed = 100;//милисекунд между кадрами
-			life = 1000;
+			life = 2000;
 			damage = 10;
 			speed = 3;
 			rateofFire = 5;
-			tileHeight = 22;
+			//tileHeight = 22;
 			
 			
 			displayBitmapData = new BitmapData(tileWidth, tileHeight, true, 0xffffff);
@@ -63,13 +65,17 @@ package
 			
 			//this.addEventListener(Event.ENTER_FRAME, draw)	;
 			
-			//sprite.graphics.beginFill(0x33cc33);
-			//sprite.graphics.drawRect(0, 0, global.TILE_WIDTH, global.TILE_HEIGHT);
-			//sprite.graphics.endFill();
-			sprite.visible = true;
+			selectionRing.graphics.lineStyle(4, 0xFFFF00,0.3); selectionRing.graphics.drawEllipse(0, global.TILE_HEIGHT, global.TILE_WIDTH + 4, global.TILE_HEIGHT / 2);
+			selectionRing.graphics.lineStyle(0.5, 0xFFFF00); selectionRing.graphics.drawEllipse(0, global.TILE_HEIGHT, global.TILE_WIDTH + 4, global.TILE_HEIGHT / 2);
+			selectionRing.visible = false;
+			sprite.graphics.beginFill(0x33cc33);
+			sprite.graphics.drawRect(0, 0, global.TILE_WIDTH, global.TILE_HEIGHT);
+			sprite.graphics.endFill();
+			sprite.visible = false;
 			//sprite.x = -5; sprite.y = -5;
 			
 			texture = global.soldierBitmap;
+			addChild(selectionRing);
 			addChild(sprite);
 			addChild(displayBitmap);
 			addEventListener(MouseEvent.CLICK, onclick);
@@ -86,10 +92,11 @@ package
 			
 			}
 		public function draw(e:Event):void {//при выводе на экран
+			//trace(state);
 			oldX = this.x;
 			oldY = this.y;
 			intTimer++;
-			if (intTimer == 3 || intTimer == 6 || intTimer==9  ) { global.cleanGarbage(); }
+			//if (intTimer == 3 || intTimer == 6 || intTimer==9  ) { global.cleanGarbage(); }
 			
 			if (toDelete) {//действия при смерти
 				if (deadCount < 0) { 
@@ -97,16 +104,20 @@ package
 					this.toRemove = true; 
 					mainTimer.stop();
 					mainTimer.removeEventListener(TimerEvent.TIMER, draw);
+					animationTimer.stop();
+					animationTimer.removeEventListener(TimerEvent.TIMER, animateSprite);
+					removeEventListener(MouseEvent.CLICK, onclick);
+					removeEventListener(MouseEvent.MOUSE_DOWN, mouseDown);
+					
 					//this.removeEventListener(Event.ENTER_FRAME, draw);
 					}
 				deadCount--;
 				
 			}else{
 			
-			sprite.graphics.clear();
-		if (select) { 
-			sprite.graphics.lineStyle(4, 0xFFFF00,0.3); sprite.graphics.drawEllipse(0, global.TILE_HEIGHT, global.TILE_WIDTH + 4, global.TILE_HEIGHT / 2);
-			sprite.graphics.lineStyle(0.5, 0xFFFF00); sprite.graphics.drawEllipse(0, global.TILE_HEIGHT, global.TILE_WIDTH + 4, global.TILE_HEIGHT / 2);
+			//sprite.graphics.clear();
+		if (select) { selectionRing.visible = true;
+			
 			
 		
 		
@@ -116,23 +127,27 @@ package
 			//sprite.graphics.endFill();
 			
 			if(Math.abs(int(curX)-targetX)>1 || Math.abs(int(curY)-targetY)>1)  {//если до цели еще далеко
-			if (walkState == 0) {  walkState = 1; }//if (currentSector) { currentSector.leave(sectorSlot); } }
-			var len:Number = destCalc(Math.abs(curX - targetX), Math.abs(curY - targetY));
-			if (len > 0) {
+			if(fireAnim<1){angle = global.getAngle((curX - targetX), (curY - targetY));}else{fireAnim--;}//расчет угла поворота спрайта
+				if (state == STAY || state==FIRE) {  state = WALK; }//if (currentSector) { currentSector.leave(sectorSlot); } }//состояние "идем"
+			
+			//trace(angle);
+			var len:Number = destCalc(Math.abs(curX - targetX), Math.abs(curY - targetY));//растояние до цели
+			if (len > 0) {//изменение координат
 			curX +=(targetX - curX) / len;
 			curY += (targetY - curY) / len;
 			}
 			}
 			else 
 			{//если пришли до цели
-				if (walkState == 1) { this.select = false;walkState = 0;  } 
+				//trace(state);
+				if (state == WALK) {  state = STAY; deSelect(); }//сбрасываем выделение и состояние "стоим"
 			}
 			
 			this.x = curX;
 			this.y = curY;
-			checkFire(global.foeArmy);
+			checkFire(global.foeArmy);// проверка на стрельбу и стрельба
 			}
-			if (intTimer >= 10) { intTimer = 0;}
+			if (intTimer >= 10) { intTimer = 0;}//
 			
 		}
 		
@@ -159,7 +174,7 @@ package
 		}
 		
 		private function getPosition():void {
-		trace('getposition надо удалить');
+		//trace('getposition надо удалить');
 			currentSector = global.getSector(this.x,this.y);//int(this.x / global.SECTOR_WIDTH)][int(this.y / global.SECTOR_HEIGHT)]
 		var coord:Vector.<int> = currentSector.getPosition();
 		if(coord.length!=0){
@@ -171,7 +186,10 @@ package
 		
 		
 		
-		
+		public function deSelect():void {
+			
+			select = false; selectionRing.visible = false;
+		}
 		
 		
 		
@@ -182,7 +200,8 @@ package
 			
 			global.cleanSelection();
 			//var len:int = global.myArmy.length; for (var i:int = 0; i < len; i++) { if (global.myArmy[i].select) { global.myArmy[i].select = false; }; } //очищаем выделение
-			if (select) { select = false; } else { select = true; }
+			if (select) { deSelect() } else { select = true;selectionRing.visible = true; }
+			
 			}
 		}
 		

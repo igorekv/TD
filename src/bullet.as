@@ -7,6 +7,9 @@ package
 	import flash.events.*;
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
+	import flash.events.TimerEvent;
+	import flash.utils.Timer;
+	
 	
 	/**
 	 * ...
@@ -33,6 +36,9 @@ package
 		private var hitTestBox:Shape = new Shape();
 		public var toRemove:Boolean = false;
 		private var enemyList:Array;
+		private var dx:Number;
+		private var dy:Number;
+		private var mainTimer:Timer;
 		
 		public function bullet(bType:int, bAngle:int,dmg:int,dist:int,_enemyList:Array)
 		{
@@ -46,30 +52,34 @@ package
 			this.damage = dmg;
 			this.bulletAngle = bAngle
 			this.bulletType = bType;
-			this.addEventListener(Event.ENTER_FRAME, onEnterFrame); //событие на каждый кадр
+			mainTimer = new Timer(20);
+			mainTimer.start();
+			mainTimer.addEventListener(TimerEvent.TIMER, onEnterFrame); //событие на таймер
 			displayBitmap.x = -tileWidth / 2;
 			displayBitmap.y = -tileHeight / 2;
 			this.rotation = bulletAngle + 180;
 			addChild(displayBitmap); //выводим обьект на экран
-			
+			dx=Math.cos(bulletAngle * global.degree) * bulletSpeed;
+			dy = Math.sin(bulletAngle * global.degree)* bulletSpeed;
 			updateSprite();	
+			
 		}
 	
 		
-		private function onEnterFrame(e:Event):void
+		private function onEnterFrame(e:TimerEvent):void
 		{
 			
-			this.x += Math.cos(bulletAngle * global.degree) * bulletSpeed;
+			this.x += dx;
 			if (bulletType == 2) {
 				ballisticY = Math.sin((Math.PI / bulletRange) * bulletDist) * 80;
 				
-				this.y = this.y + ballisticOld + Math.sin(bulletAngle * global.degree) * bulletSpeed - ballisticY;
+				this.y = this.y + ballisticOld + dy  - ballisticY;
 				
 				this.rotation = global.getAngle( ballisticY - ballisticOld,Math.cos(bulletAngle * global.degree) * bulletSpeed)+90;
 				//trace(global.getAngle(ballisticY-ballisticOld,1));
 				ballisticOld = ballisticY;
 			}else {
-				this.y += Math.sin(bulletAngle * global.degree) * bulletSpeed;
+				this.y += dy;
 			}
 			
 			
@@ -89,8 +99,7 @@ package
 			frame++;
 			if (bulletRange/bulletSpeed == bulletDist)
 			{
-				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
-				toRemove = true;
+				prepareToDelete();
 				//parent.removeChild(this);
 				//trace('boom');
 			}else{
@@ -100,20 +109,25 @@ package
 		}
 		}
 		
-		private function checkHit():void {
+		private function prepareToDelete() {
+			mainTimer.stop();
+			mainTimer.removeEventListener(TimerEvent.TIMER, onEnterFrame);
+			toRemove = true;
+		}
+		
+		private function checkHit():void {//проверка поподания
 			//hitTestObject
 			
 			for (var i:int= 0; i < enemyList.length; i++)
 				{
 			if (enemyList[i]!=null && hitTestBox.hitTestObject(enemyList[i].sprite)) { 
-				removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+				prepareToDelete(); //removeEventListener(Event.ENTER_FRAME, onEnterFrame);
 				//parent.removeChild(this);
 				
-				var fx:sfx = new sfx(sfx.BLOOD);
+				if(enemyList[i].toString()=='[object myBase]'){var fx:sfx = new sfx(sfx.SCRAP);}else{ var fx:sfx = new sfx(sfx.BLOOD);}
 				fx.rotation = bulletAngle-180;
 				fx.x = this.x; fx.y = this.y;
 				global.uiMenu.layer1.addChild(fx);
-				this.toRemove = true;
 				enemyList[i].hit(damage);
 				break;
 				}

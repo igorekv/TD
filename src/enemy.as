@@ -24,10 +24,12 @@ package
 		private var curX:Number;
 		private var curY:Number;
 		private var path:Array = new Array();
-		
+		private var dot:Sprite;
 		private var deadCount:int = 5;
 		public function enemy(_x:int, _y:int,_level:int)
 		{
+			
+			
 			animationSpeed = 100;//милисекунд между кадрами
 			this.x = _x;
 			this.y = _y*global.TILE_HEIGHT;
@@ -35,11 +37,12 @@ package
 			damage = global.skill[_level].damage;
 			speed = global.skill[_level].speed;
 			rateofFire = global.skill[_level].fireRate;
-			tileHeight = 22;
+			//tileHeight = 22;
+			rangeofFire = 150;
 			
 			findNewPath();
-			//trace("enemylife:",_health);
-			//path = global.findPath(global.nodes[0][4], global.nodes[3][6]);
+			
+			//tracePath();//дебаг показывать путь
 			this.x = curX  = path[0].mapX;
 			this.y = curY  = path[0].mapY;
 			
@@ -51,11 +54,12 @@ package
 			sprite.graphics.beginFill(0xCC3333,0.1);	
 			sprite.graphics.drawRect(0, 0, 16, 16);
 			sprite.graphics.endFill();
+			sprite.visible = false;
 			addChild(sprite);
 			addChild(displayBitmap);
 			//addEventListener(Event.ENTER_FRAME, draw);
 			
-			mainTimer = new Timer(10);
+			mainTimer = new Timer(20);
 			mainTimer.start();
 			
 			mainTimer.addEventListener(TimerEvent.TIMER, draw);
@@ -76,7 +80,17 @@ package
 			return global.destCalc(this.x,this.y,path[path.length-1].mapX,path[path.length-1].mapY,1);
 			
 		}
-		
+		private function tracePath():void {//debug
+			trace(path);
+			for (var i:int = 0; i < path.length; i++) {
+				var dot = new Sprite();
+				dot.graphics.beginFill(0xFFFF00,0.1);	
+				dot.graphics.drawRect(path[i].mapX, path[i].mapY, 16, 16);
+				dot.graphics.endFill();
+				global.uiMenu.layer1.addChild(dot);
+			}
+			
+		}
 		public function hit(dmg:int):void
 		{
 			life -= dmg;
@@ -119,8 +133,7 @@ package
 			oldX = this.x;
 			oldY = this.y;
 			
-			intTimer++;
-			if (intTimer == 3 || intTimer == 6 || intTimer == 9  ) { global.cleanGarbage(); }
+			
 			
 			checkFire(global.myArmy);
 			if (toDelete) {//действия при смерти
@@ -129,22 +142,31 @@ package
 					this.toRemove = true; 
 					mainTimer.stop();
 					mainTimer.removeEventListener(TimerEvent.TIMER, draw);
+					animationTimer.stop();
+					animationTimer.removeEventListener(TimerEvent.TIMER, animateSprite);
 					//this.removeEventListener(Event.ENTER_FRAME, draw);
 					}
 				deadCount--;
 				
-			}else{
-			
+			}else{//если живой
+				//trace(state);
+				
 				if (Math.abs(int(curX) - path[checkpoint].mapX) > 1 || Math.abs(int(curY) - path[checkpoint].mapY) > 1)
 			{//если растояние до чекпойнта  больше 1 то двигаться
 				
+				
 				var len:Number = destCalc(Math.abs(curX - path[checkpoint].mapX), Math.abs(curY - path[checkpoint].mapY));
+				if (fireAnim < 1) { //если время выстрела закончилось то крутим по ходу движения
+					angle = global.getAngle(curX - path[checkpoint].mapX, curY - path[checkpoint].mapY); 
+					}else{fireAnim--;}
+				state = WALK;
 				curX += (path[checkpoint].mapX - curX) / (len / (speed/3));
 				curY += (path[checkpoint].mapY - curY) / (len / (speed/3));
 				
-			}
-			this.x = curX;
-			this.y = curY-step;
+				
+				}
+				this.x = curX;
+				this.y = curY;// -step;
 			
 			if (Math.abs(int(curX) - path[checkpoint].mapX) <= 1 && Math.abs(int(curY) - path[checkpoint].mapY) <= 1)
 			{//если дошел до чекпойнта то следующий
@@ -179,7 +201,7 @@ package
 		
 			}
 			
-			if (intTimer >= 10) { intTimer = 0;}
+			
 			
 		}
 	

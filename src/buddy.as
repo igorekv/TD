@@ -22,7 +22,7 @@ package
 		internal var statBar:statusBar;
 		internal var targetEnemy:basicObject;//ссылка на цель
 		//internal var targetEnemy:buddy;//ссылка на цель
-		internal var targetEnemyX:int=0;//координаты цели
+		internal var targetEnemyX:int = 0;//координаты цели
 		internal var targetEnemyY:int = 0;
 		
 		//изменяемые параметры
@@ -33,13 +33,18 @@ package
 		internal var speed:int = 10;
 		
 		internal var fireTimer:int = rateofFire;
-		internal var step:int=0;
+		internal var step:int = 0;
+		
 		
 		internal var intTimer:int = 0;
 		internal var mainTimer:Timer;
 		
 		internal var animationTimer:Timer;
 		internal var animationSpeed:int = 1;
+		internal var animationRow:int = 0;
+		internal var animationSeq:Array = new Array(0, 1, 0, 2);
+		internal var animationRot:Array = new Array(6, 7, 0, 1, 2, 3, 4, 5,6);
+		internal var angle:int = 0;
 		internal var currentFrame:int = 0;
 		internal var row:int = 0;
 		internal var totalFrames:int = 8;
@@ -47,9 +52,11 @@ package
 		internal var displayBitmap:Bitmap ; //картинка спрайта на экране
 		internal var BlitPoint:Point = new Point(0, 0); //точка начала копирования пикселей
 		internal var blitRect:Rectangle////прямоугольник область копирования пикселей
-		internal var tileWidth:int = 22;
-		internal var tileHeight:int = 16;
+		internal var tileWidth:int = 20;
+		internal var tileHeight:int = 20;
 		internal var texture:Bitmap;
+		internal var fireAnim:int;//таймер при котором моб повернут в сторону огня.
+		
 		
 		public function buddy() 
 		{
@@ -65,16 +72,21 @@ package
 			
 		}
 		internal function animateSprite(e:TimerEvent=null):void {
-			trace('upd');
+			//trace('upd');
+			//if (currentFrame >= totalFrames) { currentFrame = 0 };
 			if(step==0){step=1}else{step=0}
 			displayBitmapData.lock();
+			currentFrame = animationRot[int(angle / 45)];
+			if (state == FIRE || state == STAY) { animationRow = 0;}else{animationRow++;}
 			blitRect.x = currentFrame * tileWidth;
-			blitRect.y = 0;
+			blitRect.y = (tileHeight) * animationSeq[animationRow] ;
 			
 			displayBitmapData.copyPixels(texture.bitmapData, blitRect, BlitPoint);
 			displayBitmapData.unlock();
+			
+			if (animationRow > 3) { animationRow = 0;}
 			//currentFrame++;
-			//if (currentFrame > totalFrames) { currentFrame = 0 };
+			
 		}
 		
 		
@@ -144,25 +156,30 @@ package
 				var dst:int = destCalc(this.x - targetEnemy.x, this.y - targetEnemy.y)/5;// 20 - скорости пули на скорость движения / скорости стрельбы
 				targetEnemyX = targetEnemy.x;
 				targetEnemyY = targetEnemy.y;
-					var ang:int = getAngle(this.x-targetEnemy.x+(dX*dst), this.y-targetEnemy.y+(dY*dst));
+					var ang:int = getAngle(this.x - targetEnemy.x + (dX * dst), this.y - targetEnemy.y + (dY * dst)); 
+					//если смотрю в сторону цели то угол не меняю, если нет то меняю
+					if(Math.abs(angle-ang)>45){
+					angle = ang; }
 					if(targetEnemy.toString()=='[object myBase]'){ang=getAngle(this.x-(targetEnemy.x+global.HALF_SECTOR), this.y-(targetEnemy.y+global.HALF_SECTOR));}	;
-					var sprt:bullet = new bullet(1, ang+Math.random()*2,damage,rangeofFire,enemyList);
-						sprt.x = this.x+8;
-						sprt.y = this.y+8;
+					var bulet:bullet = new bullet(1, ang+Math.random()*2,damage,rangeofFire,enemyList);
+						bulet.x = this.x+8;
+						bulet.y = this.y+8;
+						state = FIRE; fireAnim = 10;
+						var flashFx:sfx = new sfx(sfx.SHOT);
 						
-						var testfx:sfx = new sfx(sfx.SHOT);
+						displayFlame(flashFx, ang);
 						
-						displayFlame(testfx, ang);
+						global.uiMenu.layer1.addChild(flashFx);
+						if (ang > 180) { global.uiMenu.layer1.swapChildren(this, flashFx);}
+						global.magazine.push(bulet);
 						
-						global.uiMenu.layer1.addChild(testfx);
-						if (ang > 180) { global.uiMenu.layer1.swapChildren(this, testfx);}
-						global.magazine.push(sprt);
-						
-						global.uiMenu.layer1.addChild(sprt);
+						global.uiMenu.layer1.addChild(bulet);
 						global.stat_bulletCount++;
 					}
 				}//конец стрельбы
-			}
+			}else {//если стрелять еще нельзя
+				
+				}
 			fireTimer--;
 			
 		}

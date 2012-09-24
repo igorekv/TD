@@ -59,8 +59,9 @@ package
 					//var tmp:int=(global.levelBitmap.bitmapData.getPixel(_x, _y) & 0x0000FF);
 					//if (tmp < 10) {global.nodes[_x][_y] = new node(_x, _y, 0 );}else{global.nodes[_x][_y] = new node(_x, _y, 50 );}
 					var value:int=	(global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x0000FF)
-					if (value > 40) { value = 0;}
-					global.nodes[_x][_y] = new node(_x, _y, value );
+					if (value >63 ) { value = 255;}
+					global.nodes[_x][_y] = new node(_x, _y, value*10 );
+					//trace(global.levelBitmap.bitmapData.getPixel(_x, _y));
 					//drawSprite((global.levelBitmap.bitmapData.getPixel(_x, _y)& 0x00FF00)>>8, _x, _y);
 					//drawSprite((global.levelBitmap.bitmapData.getPixel(_x, _y)& 0xFF0000)>>16,  _x, _y);
 					

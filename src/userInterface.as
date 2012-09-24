@@ -25,6 +25,7 @@ package
 		public function userInterface(){
 			
 			uiMenu.addChild(layer1);
+			layer1.y += global.TOPMENU_HEIGHT;
 			uiMenu.addChild(layer2);	
 			uiMenu.addChild(layer3);
 			score = global.prepText("score:" + numToStr(global.score, 6), fontSize, 0xFFFFFF);

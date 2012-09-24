@@ -13,8 +13,8 @@ package
 		public var target_x:int;
 		public var target_y:int;
 		public var health:int = 100;
-		private var flashCount = 16;
-		private var color = 0x00FF00;
+		private var flashCount:int = 16;
+		private var color:int = 0x00FF00;
 		
 		//private var cnter:int = 0;
 		public function myBase() 
@@ -23,7 +23,7 @@ package
 			draw();
 				sprite.x = sprite.y = 32;
 				addChild(sprite);
-				life = 200;
+				life = 5000;
 		}
 		
 		public function build():void {//строит базу на карте, срабатывает по клику
@@ -67,7 +67,7 @@ package
 			
 			private function draw(color:int=0x00FF00):void {//рисует базу
 				sprite.graphics.clear();
-				sprite.graphics.beginFill(color, 0.2);
+				sprite.graphics.beginFill(color, 1);
 				sprite.graphics.moveTo(32, 0);
 				sprite.graphics.lineTo(32, 16);
 				sprite.graphics.lineTo(0, 32);
@@ -96,7 +96,7 @@ package
 			//statBar.draw(life);
 			//global.stat_bullHitCount++;
 			//global.stat_dmgCount += dmg;
-			trace(life);
+			//trace(life);
 			if (life < 0 && !this.toDelete)
 			{
 				dead();
